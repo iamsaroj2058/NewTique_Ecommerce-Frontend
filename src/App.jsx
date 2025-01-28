@@ -1,16 +1,13 @@
+import React from 'react'
+import Login from './Components/Auth/Login'
 
-import './App.css'
-
-function App() {
-
+const App = () => {
   return (
     <>
-      <h1 class="text-3xl font-bold underline  bg-red-900">
-    Hello world!
-  </h1>
-        
+ <Login/>
     </>
   )
 }
+
 
 export default App
