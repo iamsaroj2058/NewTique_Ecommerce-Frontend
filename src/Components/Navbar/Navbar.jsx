@@ -1,14 +1,64 @@
-import React from "react"
-import { Link } from "react-router-dom"
+import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
-  return (
-    <nav style={{ padding: "10px", background: "#333" }}>
-      <Link to="/" style={{ color: "white", margin: "10px" }}>Home</Link>
-      <Link to="/about" style={{ color: "white", margin: "10px" }}>About</Link>
-      <Link to="/contact" style={{ color: "white", margin: "10px" }}>Contact</Link>
-    </nav>
-  );
+    return (
+        <nav style={styles.navbar}>
+            {/* Logo Section */}
+            <div style={styles.logo}>
+                <img src="/images/logo.png" alt="Logo" style={styles.logoImg} />
+                {/* <h2 style={styles.logoText}>MyBrand</h2> */}
+            </div>
+
+            {/* Navigation Links */}
+            <div style={styles.navLinks}>
+                <Link to="/" style={styles.link}>Home</Link>
+                <Link to="/about" style={styles.link}>About</Link>
+                <Link to="/contact" style={styles.link}>Contact</Link>
+            </div>
+        </nav>
+    );
 };
 
-export default Navbar
+const styles = {
+    navbar: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "15px 20px",
+        background: "#222",
+        color: "white",
+        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+    },
+    logo: {
+        display: "flex",
+        alignItems: "center",
+    },
+    logoImg: {
+        width: "50px",
+        borderRadius: "50%",
+        marginRight: "10px",
+    },
+    logoText: {
+        fontSize: "20px",
+        fontWeight: "bold",
+    },
+    navLinks: {
+        display: "flex",
+        gap: "20px",
+    },
+    link: {
+        color: "white",
+        textDecoration: "none",
+        fontSize: "16px",
+        fontWeight: "bold",
+        padding: "8px 12px",
+        borderRadius: "5px",
+        transition: "background 0.3s",
+    },
+    linkHover: {
+        background: "#555",
+    },
+};
+
+export default Navbar;
