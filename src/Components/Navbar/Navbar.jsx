@@ -6,7 +6,7 @@ const Navbar = () => {
         <nav style={styles.navbar}>
             {/* Logo Section */}
             <div style={styles.logo}>
-                <img src="/images/logo.png" alt="Logo" style={styles.logoImg} />
+                <img src="/images/NavLogo.png" alt="Logo" style={styles.logoImg} />
                 {/* <h2 style={styles.logoText}>MyBrand</h2> */}
             </div>
 
@@ -26,9 +26,9 @@ const styles = {
         justifyContent: "space-between",
         alignItems: "center",
         padding: "15px 20px",
-        background: "#222",
+        background: "#000000",
         color: "white",
-        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+        boxShadow: "0px 4px 6px rgba(231, 8, 8, 0.1)",
     },
     logo: {
         display: "flex",
