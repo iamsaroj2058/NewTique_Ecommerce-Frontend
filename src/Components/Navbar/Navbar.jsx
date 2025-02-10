@@ -25,10 +25,10 @@ const styles = {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "15px 20px",
+        padding: "15px 80px",
         background: "#000000",
         color: "white",
-        boxShadow: "0px 4px 6px rgba(231, 8, 8, 0.1)",
+        boxShadow: "0px 4px 6px rgba(252, 172, 0, 0.1)",
     },
     logo: {
         display: "flex",
