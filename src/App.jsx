@@ -2,8 +2,11 @@ import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import Login from './Components/Pages/Login/login'
 import SignUp from './Components/Pages/SignUp/signup'
-import Navbar from "./Components/Navbar/Navbar"
+import Header from "./Components/Navbar/Header"
+import Topheader from './Components/Navbar/Topheader'
 import Home from "./Components/Pages/Home/Home"
+
+
 
 
 
@@ -13,7 +16,8 @@ import Home from "./Components/Pages/Home/Home"
 const App = () => {
   return (
     <Router>
-      <Navbar />
+      <Topheader />
+      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/about" element={<About />} /> */}
