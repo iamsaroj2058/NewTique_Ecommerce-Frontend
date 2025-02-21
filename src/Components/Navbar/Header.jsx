@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaSearch, FaHeart, FaShoppingCart } from 'react-icons/fa';
+// import { FaSearch, FaHeart, FaShoppingCart } from 'react-icons/fa';
 
 const Header = () => {
   return (
@@ -8,7 +8,7 @@ const Header = () => {
       <nav className='bg-white text-black flex justify-between items-center h-16 w-full max-w-[1170px] mx-auto px-10 mt-[40px] mb-[16px]'>
         {/* Logo Section */}
         <div className='flex items-center'>
-          <img src='/images/NavLogo.png' alt='Logo' className='w-12 rounded-full mr-3' />
+          <img src='/images/logo.png' alt='Logo' className='w-12 rounded-full mr-3' />
         </div>
 
         {/* Navigation Links */}
@@ -20,9 +20,9 @@ const Header = () => {
         </div>
 
         {/* Search Box, Wishlist & Cart */}
-        <div className="flex items-center w-[347px] gap-[24px]">
+        {/* <div className="flex items-center w-[347px] gap-[24px]"> */}
           {/* Search Box */}
-          <div className='flex items-center border border-gray-300 rounded-md overflow-hidden w-[243px] text-[12px]'>
+          {/* <div className='flex items-center border border-gray-300 rounded-md overflow-hidden w-[243px] text-[12px]'>
             <input
               type='text'
               placeholder='What are you looking for?'
@@ -31,22 +31,22 @@ const Header = () => {
             <button className='px-3 py-2 flex items-center justify-center bg-gray-200 hover:bg-gray-300 transition'>
               <FaSearch className='text-gray-600' />
             </button>
-          </div>
+          </div> */}
 
           {/* Wishlist & Cart */}
-          <div className='flex items-center gap-[16px]'>
+          {/* <div className='flex items-center gap-[16px]'>
             <button className='text-gray-600 hover:text-red-500 transition text-xl'>
               <FaHeart />
             </button>
             <button className='text-gray-600 hover:text-blue-500 transition text-xl'>
               <FaShoppingCart />
             </button>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
       </nav>
 
       {/* Horizontal Line */}
-      <hr className="border-t border-gray-300 w-full max-w-full mx-auto" />
+      <hr className="border-t border-gray-300 w-full max-w-[ mx-auto" />
     </>
   );
 };
