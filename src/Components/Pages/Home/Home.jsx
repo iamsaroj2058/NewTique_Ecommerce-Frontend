@@ -10,14 +10,6 @@ const slideImages = [
   "/images/Slider5.png",
 ];
 
-const contentStyle = {
-  height: '160px',
-  color: '#fff',
-  lineHeight: '160px',
-  width: "892px",
-  textAlign: 'center',
-  background: '#364d79',
-};
 
 const Home = () => {
   return (
@@ -33,7 +25,7 @@ const Home = () => {
     >
       {/* Category Buttons */}
       <div style={{ marginTop: "40px"}}>
-        <Button type="text">Woman’s Fashion</Button>
+        <Button type="text" className="bg-sky-50">Woman’s Fashion</Button>
         <br />
         <Button type="text">Men’s Fashion</Button>
         <br />
@@ -62,7 +54,7 @@ const Home = () => {
             <img
               src={image}
               alt={`Slide ${index + 1}`}
-              style={{ width: "100%", height: "400px", objectFit: "cover",contentStyle }}
+              style={{ width: "100%", height: "400px", objectFit: "cover" }}
             />
           </div>
         ))}
