@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, Carousel } from "antd";
-
+import { Button, Carousel, Row, Col } from "antd";
 
 const slideImages = [
   "/images/Slider1.png",
@@ -10,6 +9,14 @@ const slideImages = [
   "/images/Slider5.png",
 ];
 
+const contentStyle = {
+  height: '160px',
+  color: '#fff',
+  lineHeight: '160px',
+  width: "892px",
+  textAlign: 'center',
+  background: '#364d79',
+};
 
 const Home = () => {
   return (
@@ -25,7 +32,7 @@ const Home = () => {
     >
       {/* Category Buttons */}
       <div style={{ marginTop: "40px"}}>
-        <Button type="text" className="bg-sky-50">Woman’s Fashion</Button>
+        <Button type="text">Woman’s Fashion</Button>
         <br />
         <Button type="text">Men’s Fashion</Button>
         <br />
@@ -37,15 +44,10 @@ const Home = () => {
         <br />
       </div>
 
-      {/* Vertical Line */}
-      <div
-        style={{
-          width: "1px", // Line thickness
-          height: "calc(400px + 40px)", // Full height minus the top margin
-          backgroundColor: "#D1D5DB", // Line color
-          margin: "0 20px", // Space between the sections and the line
-        }}
-      />
+        {/* Vertical Line */}
+        <Col xs={0} md={1} className='hidden md:block'>
+          <div className='h-full w-px bg-gray-300'></div>
+        </Col>
 
       {/* Carousel Section */}
       <Carousel autoplay style={{ width: "892px", margin: "0 auto", marginTop:"40px" }}>
@@ -54,7 +56,7 @@ const Home = () => {
             <img
               src={image}
               alt={`Slide ${index + 1}`}
-              style={{ width: "100%", height: "400px", objectFit: "cover" }}
+              style={{ width: "100%", height: "400px", objectFit: "cover",contentStyle }}
             />
           </div>
         ))}
