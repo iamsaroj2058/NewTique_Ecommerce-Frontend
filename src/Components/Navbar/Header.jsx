@@ -6,7 +6,7 @@ const { Text } = Typography;
 
 const Header = () => {
   return (
-    <nav className='bg-white shadow-md w-full max-w-[1920px] mx-auto px-6 md:px-10 mb-[16px] flex flex-wrap justify-between items-center h-16'>
+    <nav className='bg-white shadow-md w-full  mx-auto px-6 md:px-10 mb-[16px] flex flex-wrap justify-between items-center h-16'>
       {/* Logo Section */}
       <div className='flex items-center'>
         <img src='/images/logo.png' alt='Logo' className='w-12 rounded-full mr-3' />

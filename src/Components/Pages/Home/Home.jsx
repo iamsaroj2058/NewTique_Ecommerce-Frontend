@@ -10,8 +10,9 @@ const slideImages = [
 ];
 
 const Home = () => {
+  
   return (
-    <div className='max-w-[1920px] mx-auto px-10 py-6'>
+    <div className=' mx-auto px-10 py-6'>
       <Row gutter={[24, 24]} align="top" className='w-full'>
         {/* Category Buttons */}
         <Col xs={24} md={5} className='text-lg'>
