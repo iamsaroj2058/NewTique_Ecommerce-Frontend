@@ -9,58 +9,41 @@ const slideImages = [
   "/images/Slider5.png",
 ];
 
-const contentStyle = {
-  height: '160px',
-  color: '#fff',
-  lineHeight: '160px',
-  width: "892px",
-  textAlign: 'center',
-  background: '#364d79',
-};
-
 const Home = () => {
   return (
-    <div
-      style={{
-        width: "1170px",
-        margin: "0 auto",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-      
-      }}
-    >
-      {/* Category Buttons */}
-      <div style={{ marginTop: "40px"}}>
-        <Button type="text">Woman’s Fashion</Button>
-        <br />
-        <Button type="text">Men’s Fashion</Button>
-        <br />
-        <Button type="text">Electronics</Button>
-        <br />
-        <Button type="text">Home & Lifestyle</Button>
-        <br />
-        <Button type="text">Medicine</Button>
-        <br />
-      </div>
-
-        {/* Vertical Line */}
-        <Col xs={0} md={1} className='hidden md:block'>
-          <div className='h-full w-px bg-gray-300'></div>
+    <div className='max-w-[1920px] mx-auto px-10 py-6'>
+      <Row gutter={[24, 24]} align="top" className='w-full'>
+        {/* Category Buttons */}
+        <Col xs={24} md={5} className='text-lg'>
+          <div className='space-y-4'>
+            <Button type="text" block className='text-lg font-semibold'>Woman’s Fashion</Button>
+            <Button type="text" block className='text-lg font-semibold'>Men’s Fashion</Button>
+            <Button type="text" block className='text-lg font-semibold'>Electronics</Button>
+            <Button type="text" block className='text-lg font-semibold'>Home & Lifestyle</Button>
+            <Button type="text" block className='text-lg font-semibold'>Medicine</Button>
+          </div>
         </Col>
 
-      {/* Carousel Section */}
-      <Carousel autoplay style={{ width: "892px", margin: "0 auto", marginTop:"40px" }}>
-        {slideImages.map((image, index) => (
-          <div key={index} style={{ textAlign: "center" }}>
-            <img
-              src={image}
-              alt={`Slide ${index + 1}`}
-              style={{ width: "100%", height: "400px", objectFit: "cover",contentStyle }}
-            />
-          </div>
-        ))}
-      </Carousel>
+        {/* Vertical Line
+        <Col xs={0} md={1} className='hidden md:flex justify-center'>
+          <div className='h-full w-[2px] bg-gray-400'></div>
+        </Col> */}
+
+        {/* Carousel Section */}
+        <Col xs={24} md={19}>
+          <Carousel autoplay className='rounded-lg overflow-hidden shadow-lg'>
+            {slideImages.map((image, index) => (
+              <div key={index} className='text-center'>
+                <img
+                  src={image}
+                  alt={`Slide ${index + 1}`}
+                  className='w-full h-[300px] md:h-[500px] object-cover'
+                />
+              </div>
+            ))}
+          </Carousel>
+        </Col>
+      </Row>
     </div>
   );
 };
