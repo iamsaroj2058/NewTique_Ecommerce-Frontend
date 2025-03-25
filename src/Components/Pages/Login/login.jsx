@@ -58,11 +58,20 @@ const Login = () => {
           >
             <Input.Password placeholder="Enter Your Password" />
           </Form.Item>
+      {/* Remember Me Checkbox and Forgot Password Link in the same line */}
+<Space style={{ width: "100%", justifyContent: "space-between" }}>
+  <Form.Item
+    name="remember"
+    valuePropName="checked"
+    style={{ marginBottom: "0" }} // Removed bottom margin
+  >
+    <Checkbox>Remember me</Checkbox>
+  </Form.Item>
 
-          {/* Remember Me Checkbox */}
-          <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>Remember me</Checkbox>
-          </Form.Item>
+  <Link href="#" style={{ fontSize: "14px", marginBottom: "0" }}>
+    Forgot Password?
+  </Link>
+</Space>
 
           {/* Submit Button */}
           <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
@@ -79,11 +88,6 @@ const Login = () => {
           }}
           direction="vertical"
         >
-          {/* Forgot Password Link */}
-          <Link href="#" style={{ marginBottom: "10px" }}>
-            Forgot Password?
-          </Link>
-
           {/* Sign Up Link */}
           <Text>
             Don't have an account? <Link href="/signup">Sign Up</Link>
