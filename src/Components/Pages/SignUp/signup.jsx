@@ -5,7 +5,7 @@ import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
 const { Text, Link } = Typography;
 
-const App = () => {
+const SignUp = () => {
   const [passwordVisible, setPasswordVisible] = React.useState(false);
 
   // Define options for the Select component (Country Code)
@@ -175,10 +175,10 @@ const App = () => {
           <Text>
             Already have an account? <Link href="/Login">Login</Link>
           </Text>
-        </Space>
-      </Card>
+            </Space>
+        </Card>
     </div>
   );
 };
 
-export default App;
+export default SignUp;

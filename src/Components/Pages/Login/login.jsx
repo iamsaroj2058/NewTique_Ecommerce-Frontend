@@ -1,12 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, Input, Button, Space, Typography, Form, Checkbox } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import ForgotPassword from "../../Model/forgotpassword";
 
 const { Text, Link } = Typography;
 
 const Login = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false); // State to control modal visibility
+
+  // Handle form submission
   const handleSubmit = (values) => {
     console.log("Login form values:", values);
+  };
+
+  // Show the modal
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  // Close the modal
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
   };
 
   return (
@@ -23,10 +37,7 @@ const Login = () => {
           Login
         </Typography.Title>
 
-        <Form
-          onFinish={handleSubmit} // Handle form submission
-          layout="vertical"
-        >
+        <Form onFinish={handleSubmit} layout="vertical">
           {/* Email Field */}
           <Form.Item
             label="Email"
@@ -58,20 +69,25 @@ const Login = () => {
           >
             <Input.Password placeholder="Enter Your Password" />
           </Form.Item>
-      {/* Remember Me Checkbox and Forgot Password Link in the same line */}
-<Space style={{ width: "100%", justifyContent: "space-between" }}>
-  <Form.Item
-    name="remember"
-    valuePropName="checked"
-    style={{ marginBottom: "0" }} // Removed bottom margin
-  >
-    <Checkbox>Remember me</Checkbox>
-  </Form.Item>
 
-  <Link href="#" style={{ fontSize: "14px", marginBottom: "0" }}>
-    Forgot Password?
-  </Link>
-</Space>
+          {/* Remember Me Checkbox and Forgot Password Link in the same line */}
+          <Space style={{ width: "100%", justifyContent: "space-between" }}>
+            <Form.Item
+              name="remember"
+              valuePropName="checked"
+              style={{ marginBottom: "0" }}
+            >
+              <Checkbox>Remember me</Checkbox>
+            </Form.Item>
+
+            {/* Forgot Password Link */}
+            <Link
+              style={{ fontSize: "14px", marginBottom: "0" }}
+              onClick={showModal} // Open modal when clicked
+            >
+              Forgot Password?
+            </Link>
+          </Space>
 
           {/* Submit Button */}
           <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
@@ -94,6 +110,12 @@ const Login = () => {
           </Text>
         </Space>
       </Card>
+
+      {/* Forgot Password Modal */}
+      <ForgotPassword
+        visible={isModalVisible} // Pass visibility state to modal
+        onClose={handleCloseModal} // Pass function to close modal
+      />
     </div>
   );
 };
