@@ -5,6 +5,7 @@ import SignUp from './Components/Pages/SignUp/signup'
 import Header from "./Components/Navbar/Header"
 import Topheader from './Components/Navbar/Topheader'
 import Home from "./Components/Pages/Home/Home"
+import FlashSale from './Components/Pages/Flash Sale/flash'
 
 
 
@@ -25,6 +26,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
+      <FlashSale/>
     </Router>
   )
 }
