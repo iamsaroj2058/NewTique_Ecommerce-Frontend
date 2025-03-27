@@ -6,6 +6,7 @@ import Header from "./Components/Navbar/Header"
 import Topheader from './Components/Navbar/Topheader'
 import Home from "./Components/Pages/Home/Home"
 import FlashSale from './Components/Pages/Flash Sale/flash'
+import Enhance from './Components/Enhance Experience/Enhance'
 
 
 
@@ -27,6 +28,7 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
       </Routes>
       <FlashSale/>
+      <Enhance/>
     </Router>
   )
 }
