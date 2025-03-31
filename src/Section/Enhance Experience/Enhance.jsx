@@ -9,7 +9,7 @@ const Enhance = () => {
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: "50px 0",
-        display: "flex",
+        display: "flex", 
         justifyContent: "center",
         minHeight: "500px",
       }}

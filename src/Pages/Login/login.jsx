@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, Input, Button, Space, Typography, Form, Checkbox } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import ForgotPassword from "../../Model/forgotpassword";
+import ForgotPassword from "../../Components/Model/forgotpassword";
 
 const { Text, Link } = Typography;
 

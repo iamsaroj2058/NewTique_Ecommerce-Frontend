@@ -1,21 +1,17 @@
-import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import Login from './Components/Pages/Login/login'
-import SignUp from './Components/Pages/SignUp/signup'
-import Header from "./Components/Navbar/Header"
-import Topheader from './Components/Navbar/Topheader'
-import Home from "./Components/Pages/Home/Home"
-import FlashSale from './Components/Pages/Flash Sale/flash'
-import Enhance from './Components/Enhance Experience/Enhance'
-
-
-
-
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./Pages/Login/login"
+import SignUp from "./Pages/SignUp/signup";
+import Header from "./Section/Navbar/Header";
+import Topheader from "./Section/Navbar/Topheader";
+import Home from "./Pages/Home/Home";
+import Enhance from './Section/Enhance Experience/Enhance'
 
 // import About from "./Pages/About"
 // import Contact from "./Pages/Contact"
 
 const App = () => {
+
   return (
     <Router>
       <Topheader />
@@ -27,11 +23,10 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
-      <FlashSale/>
-      <Enhance/>
+      <Enhance />
+
     </Router>
-  )
-}
+  );
+};
 
-
-export default App
+export default App;
