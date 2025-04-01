@@ -17,8 +17,12 @@ const Home = () => {
     {"id": "2", "name": "Red Hoodie", "price":"2200","rating": "4.5", "totalRatings": "120"},
     {"id": "3", "name": "Yellow Hat", "price":"3200","rating": "4.5", "totalRatings": "120"},
     {"id": "4", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-
+    {"id": "5", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
+    {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
+    {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
   ]
+
+
   return (
     <div className=" mx-auto px-10 py-6 ml-[60px] mr-[60px]">
       <Row gutter={[24, 24]} align="top" className="w-full">
@@ -77,14 +81,15 @@ const Home = () => {
 
 
       {/* Card */}
-      <div className="grid grid-cols-4 gap-4 mt-12">
+      <div className="overflow-x-auto p-4" style={{ width: 'calc(300px * 5)', maxWidth: '100%' }}>
+      <div className="flex gap-6">
             {
               data.map((item)=>(
                 <CardFirst productName={item.name} price={item.price} key={item.id} rating={item.rating} totalRatings ={item.totalRatings} />
             ))
             }
-          </div>
-
+      </div>
+      </div>
     </div>
   );
 };
