@@ -5,7 +5,7 @@ import SignUp from "./Pages/SignUp/signup";
 import Header from "./Section/Navbar/Header";
 import Topheader from "./Section/Navbar/Topheader";
 import Home from "./Pages/Home/Home";
-import Enhance from './Section/Enhance Experience/Enhance'
+// import Enhance from './Section/Enhance Experience/Enhance'
 
 // import About from "./Pages/About"
 // import Contact from "./Pages/Contact"
@@ -23,7 +23,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
       </Routes>
-      <Enhance />
+      {/* <Enhance /> */}
 
     </Router>
   );

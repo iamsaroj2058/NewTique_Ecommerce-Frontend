@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Carousel, Row, Col } from "antd";
 import { CardFirst } from "../../Components/Card/cardFirst";
-// import FlashSale from "./Components/Pages/Flash Sale/flash";
+import FlashSale from "../../Section/Flash Sale/flash"
 
 const slideImages = [
   "/images/Slider1.png",
@@ -13,10 +13,10 @@ const slideImages = [
 
 const Home = () => {
   const data = [
-    {"id": "1", "name": "Blue jeans", "price":"1200"},
-    {"id": "2", "name": "Red Hoodie", "price":"2200"},
-    {"id": "3", "name": "Yellow Hat", "price":"3200"},
-    {"id": "4", "name": "klsjfreen Tshirt", "price":"4200"},
+    {"id": "1", "name": "Blue jeans", "price":"1200", "rating": "4.5", "totalRatings": "120" },
+    {"id": "2", "name": "Red Hoodie", "price":"2200","rating": "4.5", "totalRatings": "120"},
+    {"id": "3", "name": "Yellow Hat", "price":"3200","rating": "4.5", "totalRatings": "120"},
+    {"id": "4", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
 
   ]
   return (
@@ -73,14 +73,14 @@ const Home = () => {
       </Row>
       {/* flash sale  and  card */}
       {/* Flash Sale */}
-      {/* <FlashSale /> */}
+      <FlashSale />
 
 
       {/* Card */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4 mt-12">
             {
               data.map((item)=>(
-                <CardFirst productName={item.name} price={item.price} key={item.id} />
+                <CardFirst productName={item.name} price={item.price} key={item.id} rating={item.rating} totalRatings ={item.totalRatings} />
             ))
             }
           </div>
