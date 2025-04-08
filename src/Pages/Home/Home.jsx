@@ -1,7 +1,9 @@
-import React from "react";
+
+import React,{ useState,useEffect} from "react";
 import { Button, Carousel, Row, Col } from "antd";
 import { CardFirst } from "../../Components/Card/cardFirst";
-import FlashSale from "../../Section/Flash Sale/flash"
+import FlashSale from "../../Section/Flash Sale/flash";
+import axios from "axios";
 
 const slideImages = [
   "/images/Slider1.png",
@@ -12,15 +14,29 @@ const slideImages = [
 ];
 
 const Home = () => {
-  const data = [
-    {"id": "1", "name": "Blue jeans", "price":"1200", "rating": "4.5", "totalRatings": "120" },
-    {"id": "2", "name": "Red Hoodie", "price":"2200","rating": "4.5", "totalRatings": "120"},
-    {"id": "3", "name": "Yellow Hat", "price":"3200","rating": "4.5", "totalRatings": "120"},
-    {"id": "4", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-    {"id": "5", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-    {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-    {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-  ]
+  // const data = [
+  // {"id": "1", "name": "Blue jeans", "price":"1200", "rating": "4.5", "totalRatings": "120" },
+  // {"id": "2", "name": "Red Hoodie", "price":"2200","rating": "4.5", "totalRatings": "120"},
+  // {"id": "3", "name": "Yellow Hat", "price":"3200","rating": "4.5", "totalRatings": "120"},
+  // {"id": "4", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
+  // {"id": "5", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
+  // {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
+  // {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
+
+  // ]
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/api/products/")
+      .then((res) => {
+        setProducts(res.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
 
 
   return (
@@ -31,27 +47,27 @@ const Home = () => {
           <div className="space-y-4">
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-                Women's Fashion
+                Men's Wear
               </Button>
             </div>
 
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-                Men's Fashion
+                Women's Wear
               </Button>
             </div>
 
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-                Tshirt
+               Unisex
               </Button>
             </div>
 
-            <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
+            {/* <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
                 Hoddy
               </Button>
-            </div>
+            </div> */}
           </div>
         </Col>
 
@@ -79,16 +95,23 @@ const Home = () => {
       {/* Flash Sale */}
       <FlashSale />
 
-
       {/* Card */}
-      <div className="overflow-x-auto p-4" style={{ width: 'calc(300px * 5)', maxWidth: '100%' }}>
-      <div className="flex gap-6">
-            {
-              data.map((item)=>(
-                <CardFirst productName={item.name} price={item.price} key={item.id} rating={item.rating} totalRatings ={item.totalRatings} />
-            ))
-            }
-      </div>
+   <div
+        className="overflow-x-auto p-4"
+        style={{ width: "100%", maxWidth: "100%" }}
+      >
+        <div className="flex gap-6 flex-wrap">
+          {products.map((item) => (
+            <CardFirst
+              key={item.id}
+              productName={item.name}
+              price={item.price}
+              productImage={item.image} // Optional, if your backend provides it
+              rating={item.rating || 4.5}
+              totalRatings={item.totalRatings || 120}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
