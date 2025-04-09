@@ -1,5 +1,4 @@
-
-import React,{ useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Carousel, Row, Col } from "antd";
 import { CardFirst } from "../../Components/Card/cardFirst";
 import FlashSale from "../../Section/Flash Sale/flash";
@@ -25,6 +24,7 @@ const Home = () => {
 
   // ]
   const [products, setProducts] = useState([]);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     axios
@@ -37,7 +37,10 @@ const Home = () => {
       });
   }, []);
 
-
+  // Function to toggle showAll state
+  const toggleShowAll = () => {
+    setShowAll(!showAll);
+  };
 
   return (
     <div className=" mx-auto px-10 py-6 ml-[60px] mr-[60px]">
@@ -59,7 +62,7 @@ const Home = () => {
 
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-               Unisex Wear
+                Unisex Wear
               </Button>
             </div>
 
@@ -70,17 +73,17 @@ const Home = () => {
             </div>
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-              Eco-Friendly Collection
+                Eco-Friendly Collection
               </Button>
             </div>
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-              Sleepwear & Loungewear
+                Sleepwear & Loungewear
               </Button>
             </div>
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-              Plus Size Collection
+                Plus Size Collection
               </Button>
             </div>
           </div>
@@ -111,12 +114,12 @@ const Home = () => {
       <FlashSale />
 
       {/* Card */}
-   <div
+      <div
         className="overflow-x-auto p-4"
         style={{ width: "100%", maxWidth: "100%" }}
       >
         <div className="flex gap-6 flex-wrap">
-          {products.map((item) => (
+          {products.slice(0, showAll ? products.length : 5).map((item) => (
             <CardFirst
               key={item.id}
               productName={item.name}
@@ -127,6 +130,13 @@ const Home = () => {
             />
           ))}
         </div>
+
+        <div className="flex justify-center mt-[40px]">
+          <Button type="primary" onClick={toggleShowAll} className="w-auto">
+            {showAll ? "Show Less" : "View More Products"}
+          </Button>
+        </div>
+        
       </div>
     </div>
   );
