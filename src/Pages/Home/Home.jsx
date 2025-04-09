@@ -59,15 +59,30 @@ const Home = () => {
 
             <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-               Unisex
+               Unisex Wear
               </Button>
             </div>
 
-            {/* <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
+            <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
               <Button type="text" block>
-                Hoddy
+                Streetwear
               </Button>
-            </div> */}
+            </div>
+            <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
+              <Button type="text" block>
+              Eco-Friendly Collection
+              </Button>
+            </div>
+            <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
+              <Button type="text" block>
+              Sleepwear & Loungewear
+              </Button>
+            </div>
+            <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
+              <Button type="text" block>
+              Plus Size Collection
+              </Button>
+            </div>
           </div>
         </Col>
 

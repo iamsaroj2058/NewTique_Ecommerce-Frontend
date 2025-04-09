@@ -3,7 +3,7 @@ import React from 'react';
 
 export function CardFirst(props) {
   const { productName, price, rating, totalRatings, productImage } = props;
-
+  console.log("Card Image URL:", productImage);
   return (
     <Card
       hoverable
