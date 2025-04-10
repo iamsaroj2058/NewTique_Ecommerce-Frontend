@@ -6,7 +6,7 @@ export function CardFirst(props) {
   console.log("Card Image URL:", productImage);
   const truncatedProductName =
   productName && productName.length > 20
-    ?  "..." + productName.slice(0, 20) 
+    ?    productName.slice(0, 20) + "..."
     : productName;
   return (
     <Card
@@ -30,19 +30,19 @@ export function CardFirst(props) {
         />
       }
     >
-      <div className="">
-        <div className="text-left items-center mb-2">
-          <span className="ml-2 text-gray-600">({totalRatings})</span>
-          <Rate disabled allowHalf defaultValue={parseFloat(rating)} />
-        </div>
+      
 
-        <p className="text-center font-bold text-2xl text-orange-500 mb-3">
-          Rs. {price}
-        </p>
         <p className="font-semibold text-xl text-black text-center mb-3 " >
           {truncatedProductName }
         </p>
-
+        <p className="text-center font-bold text-2xl text-orange-500 mb-3">
+          Rs. {price}
+        </p>
+        <div className="text-center">
+        <div className="text-left items-center mb-2">
+          <Rate disabled allowHalf defaultValue={parseFloat(rating)} />
+          <span className="ml-2 text-gray-600">({totalRatings})</span>
+        </div>
 
         {/*  Button */}
         <Button

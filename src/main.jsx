@@ -8,7 +8,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     {/* <App /> */}
     <ConfigProvider
-      direction="rtl"
+     
       theme={{
         components: {
           Button: {
