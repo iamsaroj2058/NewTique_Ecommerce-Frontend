@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-orange-500 w-full px-10 py-12 mt-80">
+    <footer className="bg-black text-orange-500 w-full px-10 py-12 mt-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         
         {/* Column 1: Logo + About */}
@@ -53,7 +53,7 @@ const Footer = () => {
 
       {/* Bottom Strip */}
       <div className="mt-10 border-t border-orange-800 pt-6 text-center text-sm text-orange-400">
-        © {new Date().getFullYear()} ShopMate. All rights reserved.
+        © {new Date().getFullYear()} NewTique. All rights reserved.
       </div>
     </footer>
   );
