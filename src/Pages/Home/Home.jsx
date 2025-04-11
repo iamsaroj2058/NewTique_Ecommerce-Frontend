@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button, Carousel, Row, Col } from "antd";
 import { CardFirst } from "../../Components/Card/cardFirst";
 import FlashSale from "../../Section/Flash Sale/flash";
+import NewArrival from "../../Section/NewArrival/newArrival";
 import axios from "axios";
 
 const slideImages = [
@@ -138,6 +139,7 @@ const Home = () => {
         </div>
         
       </div>
+      <NewArrival/>
     </div>
   );
 };
