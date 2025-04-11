@@ -3,6 +3,7 @@ import { Button, Carousel, Row, Col } from "antd";
 import { CardFirst } from "../../Components/Card/cardFirst";
 import FlashSale from "../../Section/Flash Sale/flash";
 import NewArrival from "../../Section/NewArrival/newArrival";
+import Footer from "../../Section/Footer/footer";
 import axios from "axios";
 
 const slideImages = [
@@ -44,6 +45,7 @@ const Home = () => {
   };
 
   return (
+    <div>
     <div className=" mx-auto px-10 py-6 ml-[60px] mr-[60px]">
       <Row gutter={[24, 24]} align="top" className="w-full">
         {/* Category Buttons */}
@@ -140,7 +142,10 @@ const Home = () => {
         
       </div>
       <NewArrival/>
+     
     </div>
+      <Footer/></div>
+     
   );
 };
 
