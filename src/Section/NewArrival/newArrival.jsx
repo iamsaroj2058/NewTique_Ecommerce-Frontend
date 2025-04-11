@@ -48,7 +48,7 @@ function App() {
   return (
 <div>
   <FlashSalesHeader label ="Feature" title = "New Arrival"/>
-<Splitter style={{ height: '300px' }}>
+<Splitter className='h-[600px]'>
       {/* Left Panel */}
       <Splitter.Panel collapsible>
         <Section
@@ -58,7 +58,7 @@ function App() {
       </Splitter.Panel>
 
       {/* Right Panel */}
-      <Splitter.Panel>
+      <Splitter.Panel className='h-[600px]'>
         <Splitter layout="vertical">
           {/* Top Right */}
           <Splitter.Panel>
