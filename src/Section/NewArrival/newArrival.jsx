@@ -53,7 +53,7 @@ function App() {
       <Splitter.Panel collapsible>
         <Section
           text="Left Panel"
-          imgSrc="https://via.placeholder.com/300x300.png?text=Left"
+          imgSrc="/images/newarrival_first.png"
         />
       </Splitter.Panel>
 
@@ -64,7 +64,7 @@ function App() {
           <Splitter.Panel>
             <Section
               text="Top Panel"
-              imgSrc="https://via.placeholder.com/600x150.png?text=Top"
+              imgSrc="/images/newarrival_first.png"
             />
           </Splitter.Panel>
 
@@ -74,13 +74,13 @@ function App() {
               <Splitter.Panel>
                 <Section
                   text="Bottom Left"
-                  imgSrc="https://via.placeholder.com/300x150.png?text=Bottom+Left"
-                />
+                  imgSrc="/images/newarrival_first.png"
+                  />
               </Splitter.Panel>
               <Splitter.Panel>
                 <Section
                   text="Bottom Right"
-                  imgSrc="https://via.placeholder.com/300x150.png?text=Bottom+Right"
+                  imgSrc="/images/newarrival_first.png"
                 />
               </Splitter.Panel>
             </Splitter>
