@@ -3,6 +3,7 @@ import { Button, Carousel, Row, Col } from "antd";
 import { CardFirst } from "../../Components/Card/cardFirst";
 import FlashSale from "../../Section/Flash Sale/flash";
 import NewArrival from "../../Section/NewArrival/newArrival";
+import Enhance from "../../Section/Enhance Experience/Enhance";
 import Footer from "../../Section/Footer/footer";
 import Upper from "../../Section/Upper Footer/upper"
 import axios from "axios";
@@ -142,6 +143,7 @@ const Home = () => {
         </div>
         
       </div>
+      <Enhance/>
       <NewArrival/>
      <Upper/>
     </div>
