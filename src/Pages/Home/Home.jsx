@@ -4,6 +4,7 @@ import { CardFirst } from "../../Components/Card/cardFirst";
 import FlashSale from "../../Section/Flash Sale/flash";
 import NewArrival from "../../Section/NewArrival/newArrival";
 import Footer from "../../Section/Footer/footer";
+import Upper from "../../Section/Upper Footer/upper"
 import axios from "axios";
 
 const slideImages = [
@@ -142,9 +143,10 @@ const Home = () => {
         
       </div>
       <NewArrival/>
-     
+     <Upper/>
     </div>
-      <Footer/></div>
+      <Footer/>
+      </div>
      
   );
 };
