@@ -6,6 +6,8 @@ import NewArrival from "../../Section/NewArrival/newArrival";
 import Enhance from "../../Section/Enhance Experience/Enhance";
 import Footer from "../../Section/Footer/footer";
 import Upper from "../../Section/Upper Footer/upper"
+import Header from "../../Section/Navbar/Header";
+import Topheader from "../../Section/Navbar/Topheader";
 import axios from "axios";
 
 const slideImages = [
@@ -47,7 +49,10 @@ const Home = () => {
   };
 
   return (
+
     <div>
+      <Topheader />
+      <Header />
     <div className=" mx-auto px-10 py-6 ml-[60px] mr-[60px]">
       <Row gutter={[24, 24]} align="top" className="w-full">
         {/* Category Buttons */}

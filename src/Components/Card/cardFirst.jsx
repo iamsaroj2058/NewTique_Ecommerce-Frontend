@@ -1,5 +1,7 @@
 import { Card, Rate, Button } from "antd";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+
 
 export function CardFirst(props) {
   const { productName, price, rating, totalRatings, productImage } = props;
@@ -9,6 +11,7 @@ export function CardFirst(props) {
       ? productName.slice(0, 20) + "..."
       : productName;
 
+  const navigate = useNavigate();
   return (
     <Card
       hoverable
@@ -49,7 +52,7 @@ export function CardFirst(props) {
           type="primary"
           className="font-bold text-2xl bg-red text-orange-500"
           block
-          onClick={() => console.log("Go to details")}
+          onClick={() => navigate("/addcart")}
         >
           Add to cart
         </Button>
