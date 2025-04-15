@@ -11,7 +11,7 @@ const Topheader = () => {
       <Text className="mr-4" style={{ color: textColor }}>
         Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
       </Text>
-      <Button type="link" className="font-bold underline" style={{ color: textColor }} hoverable>
+      <Button type="link" className="font-bold underline" style={{ color: textColor }}>
         Shop Now
       </Button>
     </div>

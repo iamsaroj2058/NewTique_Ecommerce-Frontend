@@ -1,44 +1,21 @@
-import React from 'react';
-import { Splitter } from 'antd';
-import FlashSalesHeader from '../Flash Sale/flashSaleHeader';
+import React from "react";
+import { Splitter, Button } from "antd";
+import FlashSalesHeader from "../Flash Sale/flashSaleHeader";
 
-function Section({ text, imgSrc }) {
+function Section({ imgSrc, children }) {
   return (
-    <div
-      style={{
-        height: '100%',
-        width: '100%',
-        position: 'relative',
-        backgroundColor: 'black',
-        overflow: 'hidden',
-        margin: 0,
-        padding: 0,
-      }}
-    >
+    <div className="relative w-full h-full bg-black overflow-hidden">
+      <div
+      className="flex items-center justify-center h-full object-cover opacity-60"
+      >
       <img
         src={imgSrc}
-        alt={text}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          opacity: 0.5,
-          display: 'block',
-        }}
+        alt=""
+        className="h-full"
       />
-      <div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          color: '#f97316',
-          fontSize: 24,
-          fontWeight: 'bold',
-          textAlign: 'center',
-        }}
-      >
-        {text}
+      </div>
+      <div className="absolute top-2/3 left-8 transform -translate-y-1/2 text-white text-left px-4">
+        {children}
       </div>
     </div>
   );
@@ -46,50 +23,110 @@ function Section({ text, imgSrc }) {
 
 function App() {
   return (
-<div>
-  <FlashSalesHeader label ="Feature" title = "New Arrival"/>
-<Splitter className='h-[600px]'>
-      {/* Left Panel */}
-      <Splitter.Panel collapsible>
-        <Section
-          text="Left Panel"
-          imgSrc="/images/newarrival_first.png"
-        />
-      </Splitter.Panel>
+    <div>
+      <FlashSalesHeader label="Feature" title="New Arrival" />
+      <Splitter className="h-[600px]">
+        {/* Left Panel */}
+        <Splitter.Panel className="h-[600px] min-h-[600px] max-h-[600px] overflow-hidden flex items-center justify-center mr-2">
+        <Section imgSrc="/images/newarrival_first.png">
+                <h1 className="text-xl font-semibold text-[#FFA724]">
+                  Men's Collection
+                </h1>
+                <p className="text-[#FFA724] text-sm max-w-[300px]">
+                  Discover the trendiest styles for men this season.
+                </p>
+                <Button
+                  type="text"
+                  style={{
+                    color: "#FFA724",
+                    paddingLeft: "0",
+                    textDecoration: "underline",
+                    marginTop: "4px",
+                  }}
+                >
+                  Shop Now
+                </Button>
+              </Section>
+        </Splitter.Panel>
 
-      {/* Right Panel */}
-      <Splitter.Panel className='h-[600px]'>
-        <Splitter layout="vertical">
-          {/* Top Right */}
-          <Splitter.Panel>
-            <Section
-              text="Top Panel"
-              imgSrc="/images/newarrival_first.png"
-            />
-          </Splitter.Panel>
+        {/* Right Panel */}
+        <Splitter.Panel className="h-[600px]">
+          <Splitter layout="vertical">
+            {/* Top Right */}
+            <Splitter.Panel>
+              <Section imgSrc="/images/womens.png">
+                <h1 className="text-xl font-semibold text-[#FFA724]">
+                  Women's Collection
+                </h1>
+                <p className="text-[#FFA724] text-sm max-w-[300px]">
+                  Discover the trendiest styles for women this season.
+                </p>
+                <Button
+                  type="text"
+                  style={{
+                    color: "#FFA724",
+                    paddingLeft: "0",
+                    textDecoration: "underline",
+                    marginTop: "4px",
+                  }}
+                >
+                  Shop Now
+                </Button>
+              </Section>
+            </Splitter.Panel>
 
-          {/* Bottom Right with two horizontal sections */}
-          <Splitter.Panel className='mt-2'>
-            <Splitter>
-              <Splitter.Panel>
-                <Section
-                  text="Bottom Left"
-                  imgSrc="/images/newarrival_first.png"
-                  />
-              </Splitter.Panel>
-              <Splitter.Panel>
-                <Section
-                  text="Bottom Right"
-                  imgSrc="/images/newarrival_first.png"
-                />
-              </Splitter.Panel>
-            </Splitter>
-          </Splitter.Panel>
-        </Splitter>
-      </Splitter.Panel>
-    </Splitter>
-</div>
-   
+            {/* Bottom Right */}
+            <Splitter.Panel className="mt-2">
+              <Splitter>
+                <Splitter.Panel>
+                  <Section imgSrc="/images/popular.png">
+                    <h1 className="text-xl font-semibold text-[#FFA724]">
+                      New Hat
+                    </h1>
+                    <p className="text-[#FFA724] text-sm max-w-[300px]">
+                      Stylish headwear for every occasion.
+                    </p>
+                    <Button
+                      type="text"
+                      style={{
+                        color: "#FFA724",
+                        paddingLeft: "0",
+                        textDecoration: "underline",
+                        marginTop: "4px",
+                      }}
+                    >
+                      Shop Now
+                    </Button>
+                  </Section>
+                </Splitter.Panel>
+                <Splitter.Panel className="ml-2">
+                  <Section imgSrc="/images/Hoody.png">
+                    <h1 className="text-2xl font-bold text-[#FFA724]">
+                      New Hoodie
+                    </h1>
+                    <p className="text-[#FFA724] text-sm max-w-[300px]">
+                      Black and white version of the PS5 hoodie on sale. Perfect
+                      for gaming enthusiasts!
+                    </p>
+                    <Button
+                      type="text"
+                      style={{
+                        color: "#FFA724",
+                        paddingLeft: "0",
+                        textDecoration: "underline",
+                        marginTop: "4px",
+                      }}
+                    >
+                      Shop Now
+                    </Button>
+                  </Section>
+                </Splitter.Panel>
+              </Splitter>
+            </Splitter.Panel>
+          </Splitter>
+        </Splitter.Panel>
+      </Splitter>
+    </div>
   );
 }
 

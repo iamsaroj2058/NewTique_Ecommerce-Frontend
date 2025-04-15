@@ -15,7 +15,7 @@ const Enhance = () => {
       }}
     >
       <Card
-        hoverable
+        // hoverable
         style={{
           width: 300,
           textAlign: "center",

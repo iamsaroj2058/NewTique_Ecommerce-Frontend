@@ -2,16 +2,16 @@ import React from 'react';
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-orange-500 w-full px-10 py-12 mt-24">
+    <footer className="bg-black text-[#FFA724] w-full px-10 py-12 mt-24">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
         
         {/* Column 1: Logo + About */}
         <div>
           <div className="flex items-center gap-3 mb-4">
             <img
-              src="/images/logo.png"
+              src="/images/logo_white.png"
               alt="Logo"
-              className="h-12 w-12 rounded-full object-cover"
+              className=" w-24 rounded-full object-cover"
             />
             <span className="text-2xl font-bold">NewTique</span>
           </div>
@@ -43,7 +43,7 @@ const Footer = () => {
             />
             <button
               type="submit"
-              className="bg-orange-500 text-black px-4 py-2 rounded hover:bg-orange-600 transition"
+              className="bg-[#FFA724] text-black px-4 py-2 rounded hover:bg-orange-600 transition"
             >
               Subscribe
             </button>
@@ -52,7 +52,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Strip */}
-      <div className="mt-10 border-t border-orange-800 pt-6 text-center text-sm text-orange-400">
+      <div className="mt-10 border-t border-[#e5cfa0] pt-6 text-center text-sm text-[#FFA724]">
         © {new Date().getFullYear()} NewTique. All rights reserved.
       </div>
     </footer>
