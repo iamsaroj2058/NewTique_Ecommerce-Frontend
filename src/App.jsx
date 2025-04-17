@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Pages/Login/login"
 import SignUp from "./Pages/SignUp/signup";
-
 import Home from "./Pages/Home/Home";
 import Addcart from "./Pages/Add to Card/addcart";
 

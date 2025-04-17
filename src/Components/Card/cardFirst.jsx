@@ -54,7 +54,7 @@ export function CardFirst(props) {
           block
           onClick={() => navigate("/addcart")}
         >
-          Add to cart
+          View Details
         </Button>
       </div>
     </Card>
