@@ -7,6 +7,7 @@ const Topheader = () => {
   const [textColor, setTextColor] = useState("#FFA724");
 
   return (
+
     <div className="bg-black text-center h-12 w-full max-w-full mx-auto flex justify-center items-center px-4">
       <Text className="mr-4" style={{ color: textColor }}>
         Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
