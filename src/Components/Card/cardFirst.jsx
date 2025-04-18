@@ -52,7 +52,7 @@ export function CardFirst(props) {
           type="primary"
           className="font-bold text-2xl bg-red text-orange-500"
           block
-          onClick={() => navigate("/addcart")}
+          onClick={() => navigate("/product-details")}
         >
           View Details
         </Button>

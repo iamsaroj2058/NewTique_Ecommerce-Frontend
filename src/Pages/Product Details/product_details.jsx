@@ -4,7 +4,7 @@ import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
 import { Breadcrumb, } from "antd";
 
-const product_details = () => {
+const Product_details = () => {
   // Define the cart items (products)
  
 
@@ -16,13 +16,16 @@ const product_details = () => {
         <Breadcrumb
           items={[
             { title: "Home" },
-            { title: "Product_Details" },
+            { title: "Product-Details" },
           ]}
         />
+        <div>
+          <img src="/images/" alt="Product Image" />
+        </div>
        </div>
       <Footer />
     </div>
   );
 };
 
-export default product_details;
+export default Product_details;
