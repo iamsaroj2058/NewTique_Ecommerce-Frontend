@@ -3,17 +3,22 @@ import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
 import { Breadcrumb, Button, Rate } from "antd";
+import { TruckOutlined, ReloadOutlined } from '@ant-design/icons';
 import Slider from "react-slick";
+import { useNavigate } from "react-router-dom";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+ 
 const ProductDetails = () => {
   const unitPrice = 1500;
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState("Red");
   const [selectedSize, setSelectedSize] = useState("M");
+  
+  const navigate = useNavigate();
 
   const productImages = [
     "/images/Hoody.png",
@@ -57,14 +62,9 @@ const ProductDetails = () => {
       <Topheader />
       <Header />
       <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
-        <Breadcrumb
-          items={[
-            { title: "Home" },
-            { title: "Product Details" },
-          ]}
-        />
+        <Breadcrumb items={[{ title: "Home" }, { title: "Product Details" }]} />
 
-        <div className="m-16 max-w-5xl bg-white p-6 rounded-lg shadow">
+        <div className="m-16 bg-white p-6 rounded-lg shadow">
           {/* Image Carousel */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div>
@@ -102,8 +102,14 @@ const ProductDetails = () => {
             <div>
               <h1 className="text-2xl font-bold">Hoodie Newly Added</h1>
               <p className="mt-2">
-                This is one of the most popular products that has attracted lots of youth.
+                This is one of the most popular products that has attracted lots
+                of youth.
               </p>
+
+              {/* Stock  */}
+              <div className="text-xl px-2 font-bold text-green-500">
+                In Stock
+              </div>
 
               {/* Price */}
               <p className="mt-4 text-2xl text-orange-500 font-bold">
@@ -175,17 +181,41 @@ const ProductDetails = () => {
 
               {/* Subtotal */}
               <p className="mt-4 text-lg font-semibold">
-                Subtotal:{" "}
-                <span className="text-green-600">Rs. {subtotal}</span>
+                Subtotal: <span className="text-green-600">Rs. {subtotal}</span>
               </p>
 
               {/* Buttons */}
               <div className="mt-6">
-                <Button type="primary">Buy Now</Button>
+              <Button type="primary" onClick={() => navigate("/checkout")}>Buy Now</Button>
+
                 <Button type="default" className="ml-4">
                   Add to Cart
                 </Button>
               </div>
+
+              {/* Describe Advertise */}
+              <div className="border-2 rounded-md mt-4 p-6 bg-white">
+      {/* Free Delivery */}
+      <div className="flex items-start gap-4">
+        <TruckOutlined className="text-2xl text-blue-500 mt-1" />
+        <div>
+          <h1 className="text-lg font-semibold">Free Delivery</h1>
+          <p className="text-gray-600">This is text area</p>
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t-2 my-4"></div>
+
+      {/* Return Delivery */}
+      <div className="flex items-start gap-4">
+        <ReloadOutlined className="text-2xl text-green-500 mt-1" />
+        <div>
+          <h1 className="text-lg font-semibold">Return Delivery</h1>
+          <p className="text-gray-600">This is text area</p>
+        </div>
+      </div>
+    </div>
             </div>
           </div>
 
