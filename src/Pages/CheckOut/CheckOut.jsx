@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
-import { Input, Button, Form, Divider } from "antd";
+import { Input, Button, Form, Divider,Breadcrumb } from "antd";
 
 const CheckOut = () => {
   const [sameAsBilling, setSameAsBilling] = useState(true);
@@ -12,6 +12,7 @@ const CheckOut = () => {
       <Topheader />
       <Header />
       <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
+      <Breadcrumb items={[{ title: "Home" }, { title: "Product Details" } , { title: "Checkout" }]} />
         <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
           <h2 className="text-2xl font-semibold mb-6">Billing Information</h2>
 
