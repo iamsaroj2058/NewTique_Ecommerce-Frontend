@@ -5,6 +5,7 @@ import SignUp from "./Pages/SignUp/signup";
 import Home from "./Pages/Home/Home";
 import Product_details from "./Pages/Product Details/product_details";
 import CheckOut from "./Pages/CheckOut/CheckOut";
+import Addcart from "./Pages/Add to Cart/addcart";
 
 
 
@@ -21,6 +22,8 @@ const App = () => {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/product-details" element ={<Product_details/>}/>
         <Route path="/checkout" element ={<CheckOut/>}/>
+        <Route path = "/add-to-cart" element = {<Addcart/>}/>
+
       </Routes>
       {/* <Enhance /> */}
 

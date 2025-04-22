@@ -4,6 +4,7 @@ import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
 import { Breadcrumb, Table } from "antd";
 
+
 const Addcart = () => {
   // Define the cart items (products)
   const dataSource = [
@@ -53,6 +54,8 @@ const Addcart = () => {
     },
   ];
 
+
+
   return (
     <div>
       <Topheader />
@@ -61,7 +64,7 @@ const Addcart = () => {
         <Breadcrumb
           items={[
             { title: "Home" },
-            { title: "View Details" },
+            { title: "Add to Cart" },
           ]}
         />
         

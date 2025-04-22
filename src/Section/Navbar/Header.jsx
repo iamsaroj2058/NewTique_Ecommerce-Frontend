@@ -6,6 +6,7 @@ import {
   HeartOutlined,
   UserOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 const { Search } = Input;
@@ -56,6 +57,8 @@ const Header = () => {
     },
   ];
 
+  const navigate = useNavigate();
+
   return (
     <nav className="bg-white shadow-md w-full px-6 md:px-10 mb-[16px] ">
       <div className=" ml-[60px] mr-[60px]">
@@ -92,7 +95,7 @@ const Header = () => {
 
                     <div className="flex items-center gap-4 ">
                     
-                      <Link to="/cart">
+                      <Link to="/add-to-cart" onClick={() => navigate("/add-to-cart")}>
                         <Badge count={2} size="small">
                           <ShoppingCartOutlined style={{ fontSize: "22px" }} />
                         </Badge>
