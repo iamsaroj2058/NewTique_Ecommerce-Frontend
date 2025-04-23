@@ -186,7 +186,7 @@ const ProductDetails = () => {
 
               {/* Buttons */}
               <div className="mt-6">
-              <Button type="primary" onClick={() => navigate("/checkout")}>Buy Now</Button>
+              <Button type="primary" onClick={() => navigate("/Home/product-details/checkout")}>Buy Now</Button>
 
                 <Button type="default" className="ml-4">
                   Add to Cart

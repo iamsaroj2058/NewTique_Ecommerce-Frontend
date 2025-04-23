@@ -95,15 +95,15 @@ const Header = () => {
 
                     <div className="flex items-center gap-4 ">
                     
-                      <Link to="/add-to-cart" onClick={() => navigate("/add-to-cart")}>
+                      <Link to="/Home/add-to-cart" >
                         <Badge count={2} size="small">
                           <ShoppingCartOutlined style={{ fontSize: "22px" }} />
                         </Badge>
                       </Link>
 
-                      <Link to="/wishlist">
+                      {/* <Link to="/wishlist">
                         <HeartOutlined style={{ fontSize: "22px" }} />
-                      </Link>
+                      </Link> */}
 
                       <Link to="/profile">
                         <UserOutlined style={{ fontSize: "22px" }} />
