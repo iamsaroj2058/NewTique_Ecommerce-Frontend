@@ -10,7 +10,7 @@ const ContactUs = () => {
       <Topheader />
       <Header />
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         <h1 className="text-3xl font-bold mb-4">Contact Us</h1>
         <p className="text-gray-700 text-lg mb-6">
           We're here to help! Whether you have a question about your order, our products, or just want to give feedback,

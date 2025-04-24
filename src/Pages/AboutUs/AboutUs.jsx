@@ -9,7 +9,7 @@ const AboutUs = () => {
       <Topheader />
       <Header />
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="max-w-7xl mx-auto px-6 py-6">
         <h1 className="text-3xl font-bold mb-4">About Us</h1>
         <p className="text-gray-700 text-lg leading-relaxed">
           Welcome to our store! We’re a passionate team dedicated to bringing you the best quality

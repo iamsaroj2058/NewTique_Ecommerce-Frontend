@@ -112,7 +112,7 @@ const Profile = () => {
       <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
         <Breadcrumb items={[{ title: "Home" }, { title: "Profile" }]} />
 
-        <Layout className="mt-6 bg-white shadow rounded-xl">
+        <Layout className=" mt-6 bg-white shadow rounded-xl">
           <Sider width={250} className="bg-white border-r">
             <Menu
               mode="inline"
