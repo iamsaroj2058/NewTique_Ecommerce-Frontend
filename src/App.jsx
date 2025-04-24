@@ -6,6 +6,7 @@ import Home from "./Pages/Home/Home";
 import Product_details from "./Pages/Product Details/product_details";
 import CheckOut from "./Pages/CheckOut/CheckOut";
 import Addcart from "./Pages/Add to Cart/addcart";
+import Profile from "./Pages/Profile/profile";
 
 
 
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/Home/product-details" element ={<Product_details/>}/>
         <Route path="/Home/product-details/checkout" element ={<CheckOut/>}/>
         <Route path="/Home/add-to-cart" element={<Addcart />} />
+        <Route path="/Profile" element ={<Profile/>}/>
 
       </Routes>
       {/* <Enhance /> */}

@@ -105,7 +105,7 @@ const Header = () => {
                         <HeartOutlined style={{ fontSize: "22px" }} />
                       </Link> */}
 
-                      <Link to="/profile">
+                      <Link to="/Profile">
                         <UserOutlined style={{ fontSize: "22px" }} />
                       </Link>
                     </div>
