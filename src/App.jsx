@@ -7,6 +7,8 @@ import Product_details from "./Pages/Product Details/product_details";
 import CheckOut from "./Pages/CheckOut/CheckOut";
 import Addcart from "./Pages/Add to Cart/addcart";
 import Profile from "./Pages/Profile/profile";
+import AboutUs from "./Pages/AboutUs/AboutUs";
+import ContactUs from "./Pages/ContactUs/ContactUs";
 
 
 
@@ -17,8 +19,8 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        {/* <Route path="/about" element={<About />} /> */}
-        {/* <Route path="/contact" element={<Contact />} /> */}
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/Home/product-details" element ={<Product_details/>}/>
