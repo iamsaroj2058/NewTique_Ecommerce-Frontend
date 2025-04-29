@@ -23,6 +23,7 @@ import {
   LockOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
+  LogoutOutlined,
 } from "@ant-design/icons";
 
 const { Content, Sider } = Layout;
@@ -129,6 +130,9 @@ const Profile = () => {
               </Menu.Item>
               <Menu.Item key="changePassword" icon={<LockOutlined />}>
                 Change Password
+              </Menu.Item>
+              <Menu.Item key="Logout" icon={<LogoutOutlined />}>
+                Logout
               </Menu.Item>
             </Menu>
           </Sider>
@@ -281,6 +285,20 @@ const Profile = () => {
                 </Form>
               </div>
             )}
+              {activeMenu === "Logout" && (
+                <div>
+                  <Descriptions title="Are you sure you want to logout?" bordered column={1}>
+                  
+                  </Descriptions>
+                  <Button type="primary" className="mt-4" onClick={showModal}>
+                 Yes
+                </Button>
+                <Button  className="mt-4 ml-4" onClick={showModal}>
+                  No
+                </Button>
+
+                </div>
+)}
           </Content>
         </Layout>
       </div>
