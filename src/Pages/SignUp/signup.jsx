@@ -2,6 +2,7 @@ import React from "react";
 import { Card, Input, Button, Space, Select, Typography, Form, Checkbox } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
+import axios from "axios";
 
 const { Text, Link } = Typography;
 
@@ -11,8 +12,24 @@ const SignUp = () => {
   // Define options for the Select component (Country Code)
   const options = [{ value: "+977", label: "+977" }];
 
-  const handleSubmit = (values) => {
-    console.log("Form values:", values);
+  // const handleSubmit = (values) => {
+  //   console.log("Form values:", values);
+  // };
+  const handleSubmit = async (values) => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/register/", {
+        email: values.email,
+        password: values.password,
+        full_name: values.fullName,
+        phone: values.phone,
+      });
+  
+      console.log("User registered:", response.data);
+      alert("Registered successfully!");
+    } catch (error) {
+      console.error("Registration error:", error.response.data);
+      alert("Registration failed: " + JSON.stringify(error.response.data));
+    }
   };
 
   return (
