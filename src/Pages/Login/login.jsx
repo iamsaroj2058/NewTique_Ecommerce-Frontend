@@ -2,15 +2,37 @@ import React, { useState } from "react";
 import { Card, Input, Button, Space, Typography, Form, Checkbox } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import ForgotPassword from "../../Components/Model/forgotpassword";
+import axios from "axios"; 
+import { useNavigate } from "react-router-dom";
 
 const { Text, Link } = Typography;
 
 const Login = () => {
   const [isModalVisible, setIsModalVisible] = useState(false); // State to control modal visibility
+  const navigate = useNavigate(); // Initialize the navigate function
 
   // Handle form submission
-  const handleSubmit = (values) => {
-    console.log("Login form values:", values);
+  const handleSubmit = async (values) => {
+    try {
+      const response = await axios.post("http://localhost:8000/api/login/", {
+        email: values.email,
+        password: values.password,
+      });
+  
+      const { token, user } = response.data;
+  
+      // Save token for authenticated requests later
+      localStorage.setItem("authToken", token);
+  
+      console.log("User logged in:", user);
+      alert("Login successful!");
+  
+      // Redirect to the dashboard after successful login
+      navigate("/");  // Navigate to the dashboard page
+    } catch (error) {
+      console.error("Login error:", error.response?.data || error.message);
+      alert("Login failed: " + JSON.stringify(error.response?.data || error.message));
+    }
   };
 
   // Show the modal
