@@ -15,6 +15,7 @@ const SignUp = () => {
   // const handleSubmit = (values) => {
   //   console.log("Form values:", values);
   // };
+  const [loading, setLoading] = React.useState(false);
   const handleSubmit = async (values) => {
     try {
       const response = await axios.post("http://localhost:8000/api/register/", {
@@ -23,12 +24,25 @@ const SignUp = () => {
         full_name: values.fullName,
         phone: values.phone,
       });
-  
+
       console.log("User registered:", response.data);
       alert("Registered successfully!");
     } catch (error) {
-      console.error("Registration error:", error.response.data);
-      alert("Registration failed: " + JSON.stringify(error.response.data));
+      if (error.response) {
+        // Server responded with a non-2xx status
+        console.error("Registration error:", error.response.data);
+        alert("Registration failed: " + JSON.stringify(error.response.data));
+      } else if (error.request) {
+        // No response received
+        console.error("No response from server:", error.request);
+        alert("No response from the server. Please try again later.");
+      } else {
+        // Something else caused the error
+        console.error("Error setting up the request:", error.message);
+        alert("An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false); // End loading when done
     }
   };
 
@@ -88,23 +102,31 @@ const SignUp = () => {
           {/* Phone Number Field */}
           <Form.Item
             label="Phone Number"
-            name="phone"
-            rules={[
-              {
-                required: true,
-                message: "Please enter your phone number",
-              },
-              {
-                pattern: /^[0-9]{10}$/,
-                message: "Please enter a valid phone number (10 digits)",
-              },
-            ]}
+            required
           >
             <Space.Compact style={{ width: "100%" }}>
-              <Select defaultValue="+977" options={options} style={{ width: "30%" }} />
-              <Input placeholder="Enter your phone number" style={{ width: "70%" }} />
+              <Form.Item name="phonePrefix" noStyle initialValue="+977">
+                <Select style={{ width: "30%" }} options={options} />
+              </Form.Item>
+              <Form.Item
+                name="phoneNumber"
+                noStyle
+                rules={[
+                  {
+                    required: true,
+                    message: "Please enter your phone number",
+                  },
+                  {
+                    pattern: /^[0-9]{10}$/,
+                    message: "Please enter a valid 10-digit number",
+                  },
+                ]}
+              >
+                <Input style={{ width: "70%" }} placeholder="Enter your phone number" />
+              </Form.Item>
             </Space.Compact>
           </Form.Item>
+
 
           {/* Password Field */}
           <Form.Item
@@ -175,7 +197,7 @@ const SignUp = () => {
           </Form.Item>
 
           {/* Submit Button */}
-          <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
+          <Button type="primary" htmlType="submit" style={{ width: "100%" }} loading={loading}>
             Sign Up
           </Button>
         </Form>
@@ -192,8 +214,8 @@ const SignUp = () => {
           <Text>
             Already have an account? <Link href="/Login">Login</Link>
           </Text>
-            </Space>
-        </Card>
+        </Space>
+      </Card>
     </div>
   );
 };
