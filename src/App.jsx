@@ -9,6 +9,7 @@ import Addcart from "./Pages/Add to Cart/addcart";
 import Profile from "./Pages/Profile/profile";
 import AboutUs from "./Pages/AboutUs/AboutUs";
 import ContactUs from "./Pages/ContactUs/ContactUs";
+import CategoryPage from "./Pages/CategoryPage/CategoryPage";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
         <Route path="/Home/product-details/checkout" element={<CheckOut />} />
         <Route path="/Home/add-to-cart" element={<Addcart />} />
         <Route path="/Profile" element={<Profile />} />
+        <Route path="/category/:id" element={<CategoryPage />} />
       </Routes>
       {/* <Enhance /> */}
     </Router>
