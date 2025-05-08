@@ -2,38 +2,24 @@ import { Card, Rate, Button } from "antd";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-
 export function CardFirst(props) {
-  const { productName, price, rating, totalRatings, productImage } = props;
-
+  const { productName, price, rating, totalRatings, productImage, id } = props;
   const truncatedProductName =
     productName && productName.length > 20
       ? productName.slice(0, 20) + "..."
       : productName;
-
   const navigate = useNavigate();
+
   return (
     <Card
       hoverable
-      style={{
-        width: 300,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        borderRadius: "10px",
-        boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-        transition: "transform 0.3s ease-in-out",
-        position: "relative",
-      }}
+      className="rounded-2xl shadow-md transition-transform duration-300 ease-in-out hover:scale-105 w-full"
+      bodyStyle={{ padding: "12px" }}
       cover={
         <img
           alt={productName}
-          src={productImage || "https://via.placeholder.com/300"}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = "https://via.placeholder.com/300";
-          }}
-          className="h-[200px] w-full object-cover"
+          src={productImage || "https://via.placeholder.com/250x200"}
+          className="h-[180px] w-full object-cover rounded-t-2xl"
         />
       }
     >
@@ -52,7 +38,7 @@ export function CardFirst(props) {
           type="primary"
           className="font-bold text-2xl bg-red text-orange-500"
           block
-          onClick={() => navigate("Home/product-details")}
+          onClick={() => navigate(`/product-details/${id}`)} // Correct route to Product Details
         >
           View Details
         </Button>

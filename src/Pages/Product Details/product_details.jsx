@@ -1,105 +1,128 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
 import { Breadcrumb, Button, Rate } from "antd";
-import { TruckOutlined, ReloadOutlined } from '@ant-design/icons';
+import { TruckOutlined, ReloadOutlined } from "@ant-design/icons";
 import Slider from "react-slick";
-import { useNavigate } from "react-router-dom";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const ProductDetails = () => {
-  const unitPrice = 1500;
-  const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedColor, setSelectedColor] = useState("Red");
-  const [selectedSize, setSelectedSize] = useState("M");
-
+  const { id } = useParams();
   const navigate = useNavigate();
   const sliderRef = useRef();
 
-  const productImages = [
-    "/images/Hoody.png",
-    "/images/Hoody.png",
-    "/images/Hoody.png",
-  ];
+  const [product, setProduct] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [reviews, setReviews] = useState([]);
 
-  const colors = ["Red", "Blue", "Black"];
-  const sizes = ["S", "M", "L", "XL"];
+  useEffect(() => {
+    axios
+      .get(`http://127.0.0.1:8000/store/products/${id}/`)
+      .then((res) => {
+        setProduct(res.data);
+        setSelectedColor(res.data.colors?.[0] || ""); // optional
+        setSelectedSize(res.data.sizes?.[0] || "");
+        if (res.data.reviews) setReviews(res.data.reviews);
+      })
+      .catch((err) => {
+        console.error("Failed to load product", err);
+      });
+  }, [id]);
 
-  const reviews = [
-    {
-      name: "Ali Khan",
-      comment: "Great quality and super comfortable!",
-      rating: 5,
-    },
-    {
-      name: "Sara Malik",
-      comment: "Color was slightly different, but still happy.",
-      rating: 4,
-    },
-  ];
+  const increaseQuantity = () => setQuantity((q) => q + 1);
+  const decreaseQuantity = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
 
-  const increaseQuantity = () => setQuantity((prev) => prev + 1);
-  const decreaseQuantity = () => {
-    if (quantity > 1) setQuantity((prev) => prev - 1);
+  const subtotal = product ? product.price * quantity : 0;
+
+  const handleAddToCart = () => {
+    console.log("Added to cart:", {
+      product,
+      quantity,
+      selectedColor,
+      selectedSize,
+    });
   };
 
-  const subtotal = unitPrice * quantity;
+  const handleBuyNow = () => {
+    console.log("Buy Now:", { product, quantity });
+    navigate("/checkout");
+  };
 
-  const settings = {
+  const carouselSettings = {
     dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    beforeChange: (oldIndex, newIndex) => setSelectedImage(newIndex),
+    beforeChange: (_, newIdx) => setSelectedImage(newIdx),
   };
+
+  if (!product)
+    return <div className="p-10 text-center">Loading product...</div>;
 
   return (
     <div>
       <Topheader />
       <Header />
-      <div className=" mx-auto px-10 py-6 ml-[60px] mr-[60px]">
+      <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
         <Breadcrumb items={[{ title: "Home" }, { title: "Product Details" }]} />
 
-        <div className=" max-w-7xl mx-auto px-6 py-6 bg-white p-6 rounded-2xl shadow-md mt-8 grid md:grid-cols-2 gap-10">
-          {/* Image Carousel Section */}
+        <div className="max-w-7xl mx-auto px-6 py-6 bg-white rounded-2xl shadow-md mt-8 grid md:grid-cols-2 gap-10">
+          {/* Image carousel */}
           <div className="w-full">
             <div className="p-2 border rounded-xl bg-gray-100">
-              <Slider ref={sliderRef} {...settings}>
-                {productImages.map((img, index) => (
-                  <div key={index} className="flex justify-center">
-                    <img
-                      src={img}
-                      alt={`Product ${index + 1}`}
-                      className="rounded-xl h-[300px] md:h-[500px] object-contain"
-                    />
-                  </div>
-                ))}
-              </Slider>
+              {product.images && product.images.length > 0 ? (
+                <Slider ref={sliderRef} {...carouselSettings}>
+                  {product.images.map((img, i) => (
+                    <div key={i} className="flex justify-center">
+                      <img
+                        src={img}
+                        alt={`Product ${i + 1}`}
+                        className="rounded-xl h-[300px] md:h-[500px] object-contain"
+                      />
+                    </div>
+                  ))}
+                </Slider>
+              ) : (
+                <div className="flex justify-center">
+                  <img
+                    src={product.image}
+                    alt="Product"
+                    className="rounded-xl h-[300px] md:h-[500px] object-contain"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Thumbnails */}
             <div className="flex gap-4 mt-4 flex-wrap">
-              {productImages.map((img, index) => (
+              {(product.images && product.images.length > 0
+                ? product.images
+                : [product.image]
+              ).map((img, index) => (
                 <div
                   key={index}
-                  className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200 ${
-                    selectedImage === index
-                      ? "border-blue-500 scale-105"
-                      : "border-gray-300"
-                  }`}
                   onClick={() => {
                     setSelectedImage(index);
                     sliderRef.current?.slickGoTo(index);
                   }}
+                  className={`cursor-pointer border-2 rounded-lg overflow-hidden ${
+                    selectedImage === index
+                      ? "border-blue-500 scale-105"
+                      : "border-gray-300"
+                  }`}
                 >
                   <img
                     src={img}
-                    alt={`Thumbnail ${index + 1}`}
+                    alt={`Thumb ${index}`}
                     className="h-20 w-20 object-cover"
                   />
                 </div>
@@ -109,25 +132,25 @@ const ProductDetails = () => {
 
           {/* Product Info */}
           <div>
-            <h1 className="text-2xl font-bold">Hoodie Newly Added</h1>
-            <p className="mt-2">
-              This is one of the most popular products that has attracted lots of youth.
-            </p>
+            <h1 className="text-2xl font-bold">{product.name}</h1>
+            <p className="mt-2 text-gray-600">{product.description}</p>
 
-            <div className="text-xl px-2 font-bold text-green-500 mt-2">In Stock</div>
+            <div className="text-xl font-bold text-green-500 mt-2">
+              In Stock
+            </div>
 
             <p className="mt-4 text-2xl text-orange-500 font-bold">
-              Rs. {unitPrice}
+              Rs. {product.price}
               <sub className="text-gray-500 line-through text-base ml-2">
                 Rs. 2100
               </sub>
             </p>
 
-            {/* Color Selection */}
+            {/* Color selection */}
             <div className="mt-4">
               <p className="font-semibold mb-2">Color:</p>
               <div className="flex space-x-3">
-                {colors.map((color) => (
+                {(product.colors || []).map((color) => (
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
@@ -143,11 +166,11 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Size Selection */}
+            {/* Size selection */}
             <div className="mt-4">
               <p className="font-semibold mb-2">Size:</p>
               <div className="flex space-x-3">
-                {sizes.map((size) => (
+                {(product.sizes || []).map((size) => (
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
@@ -163,20 +186,20 @@ const ProductDetails = () => {
               </div>
             </div>
 
-            {/* Quantity Selector */}
+            {/* Quantity selector */}
             <div className="mt-6 flex items-center space-x-4">
               <span className="text-lg font-medium">Quantity:</span>
               <div className="flex items-center border rounded px-3 py-1">
                 <button
                   onClick={decreaseQuantity}
-                  className="text-xl px-2 font-bold hover:text-red-500"
+                  className="text-xl px-2 font-bold"
                 >
                   −
                 </button>
                 <span className="mx-3">{quantity}</span>
                 <button
                   onClick={increaseQuantity}
-                  className="text-xl px-2 font-bold hover:text-green-500"
+                  className="text-xl px-2 font-bold"
                 >
                   +
                 </button>
@@ -188,12 +211,14 @@ const ProductDetails = () => {
               Subtotal: <span className="text-green-600">Rs. {subtotal}</span>
             </p>
 
-            {/* Buttons */}
+            {/* Action Buttons */}
             <div className="mt-6">
-              <Button type="primary" onClick={() => navigate("/Home/product-details/checkout")}>
+              <Button type="primary" onClick={handleBuyNow}>
                 Buy Now
               </Button>
-              <Button type="default" className="ml-4">Add to Cart</Button>
+              <Button type="default" className="ml-4" onClick={handleAddToCart}>
+                Add to Cart
+              </Button>
             </div>
 
             {/* Extra Info */}
@@ -202,7 +227,7 @@ const ProductDetails = () => {
                 <TruckOutlined className="text-2xl text-blue-500 mt-1" />
                 <div>
                   <h1 className="text-lg font-semibold">Free Delivery</h1>
-                  <p className="text-gray-600">This is text area</p>
+                  <p className="text-gray-600">Available in select regions</p>
                 </div>
               </div>
 
@@ -211,8 +236,8 @@ const ProductDetails = () => {
               <div className="flex items-start gap-4">
                 <ReloadOutlined className="text-2xl text-green-500 mt-1" />
                 <div>
-                  <h1 className="text-lg font-semibold">Return Delivery</h1>
-                  <p className="text-gray-600">This is text area</p>
+                  <h1 className="text-lg font-semibold">Easy Return</h1>
+                  <p className="text-gray-600">7-day return policy</p>
                 </div>
               </div>
             </div>
@@ -223,13 +248,20 @@ const ProductDetails = () => {
         <div className="mt-10 max-w-7xl mx-auto px-6 py-6">
           <h2 className="text-xl font-bold mb-4">Customer Reviews</h2>
           <div className="space-y-4">
-            {reviews.map((review, idx) => (
-              <div key={idx} className="border p-4 rounded shadow-sm bg-gray-50">
-                <p className="font-semibold">{review.name}</p>
-                <Rate disabled defaultValue={review.rating} />
-                <p className="text-gray-700 mt-1">{review.comment}</p>
-              </div>
-            ))}
+            {reviews.length > 0 ? (
+              reviews.map((review, idx) => (
+                <div
+                  key={idx}
+                  className="border p-4 rounded shadow-sm bg-gray-50"
+                >
+                  <p className="font-semibold">{review.user}</p>
+                  <Rate disabled defaultValue={review.rating} />
+                  <p className="text-gray-700 mt-1">{review.comment}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500">No reviews yet</p>
+            )}
           </div>
         </div>
       </div>
