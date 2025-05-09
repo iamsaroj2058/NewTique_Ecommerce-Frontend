@@ -15,18 +15,28 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        {/* Main Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
+
+        {/* Authentication Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+
+        {/* Product Routes */}
         <Route path="/product-details/:id" element={<Product_details />} />
-        <Route path="/Home/product-details/checkout" element={<CheckOut />} />
-        <Route path="/Home/add-to-cart" element={<Addcart />} />
-        <Route path="/Profile" element={<Profile />} />
+
+        {/* Cart & Checkout */}
+        <Route path="/add-to-cart" element={<Addcart />} />
+        <Route path="/checkout" element={<CheckOut />} />
+
+        {/* Profile Route */}
+        <Route path="/profile" element={<Profile />} />
+
+        {/* Category Page Route */}
         <Route path="/category/:id" element={<CategoryPage />} />
       </Routes>
-      {/* <Enhance /> */}
     </Router>
   );
 };

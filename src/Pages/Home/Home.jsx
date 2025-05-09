@@ -19,103 +19,51 @@ const slideImages = [
 ];
 
 const Home = () => {
-  // const data = [
-  // {"id": "1", "name": "Blue jeans", "price":"1200", "rating": "4.5", "totalRatings": "120" },
-  // {"id": "2", "name": "Red Hoodie", "price":"2200","rating": "4.5", "totalRatings": "120"},
-  // {"id": "3", "name": "Yellow Hat", "price":"3200","rating": "4.5", "totalRatings": "120"},
-  // {"id": "4", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-  // {"id": "5", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-  // {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-  // {"id": "6", "name": "klsjfreen Tshirt", "price":"4200","rating": "4.5", "totalRatings": "120"},
-
-  // ]
   const [products, setProducts] = useState([]);
-
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch all products
     axios
-      .get("http://127.0.0.1:8000/store/categories/")
-      .then((res) => setCategories(res.data))
-      .catch((err) => console.error(err));
-  }, []);
-
-  const [showAll, setShowAll] = useState(false);
-
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/api/products/")
+      .get("http://127.0.0.1:8000/store/products/")
       .then((res) => {
         setProducts(res.data);
+        
+        // Extract unique category names
+        const categoryNames = [
+          ...new Set(res.data.map((product) => product.category_name)),
+        ];
+        setCategories(categoryNames);
       })
-      .catch((err) => {
-        console.error(err);
-      });
+      .catch((err) => console.error(err));
   }, []);
-
-  // Function to toggle showAll state
-  const toggleShowAll = () => {
-    setShowAll(!showAll);
-  };
 
   return (
     <div>
       <Topheader />
       <Header />
-      <div className=" mx-auto px-10 py-6 ml-[60px] mr-[60px]">
+      <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
         <Row gutter={[24, 24]} align="top" className="w-full">
-          {/* Category Buttons */}
-          <Col xs={24} md={3} className="text-lg">
+          {/* Categories Sidebar */}
+          <Col xs={24} sm={6} className="text-lg">
             <div className="space-y-4">
-              <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
-                <Button type="text" block>
-                  Men's Wear
-                </Button>
-              </div>
-
-              <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
-                <Button type="text" block>
-                  Women's Wear
-                </Button>
-              </div>
-
-              <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
-                <Button type="text" block>
-                  Unisex Wear
-                </Button>
-              </div>
-
-              <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
-                <Button type="text" block>
-                  Streetwear
-                </Button>
-              </div>
-              <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
-                <Button type="text" block>
-                  Eco-Friendly Collection
-                </Button>
-              </div>
-              <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
-                <Button type="text" block>
-                  Sleepwear & Loungewear
-                </Button>
-              </div>
-              <div className="text-lg hover:bg-[#FFA724] rounded-[4px]">
-                <Button type="text" block>
-                  Plus Size Collection
-                </Button>
-              </div>
+              {categories.map((category, index) => (
+                <div key={index} className="hover:bg-[#FFA724] rounded-[4px]">
+                  <Button
+                    type="text"
+                    block
+                    onClick={() => navigate(`/category/${category}`)} // Navigate to category page
+                  >
+                    {category}
+                  </Button>
+                </div>
+              ))}
             </div>
           </Col>
 
-          {/* Vertical Line
-        <Col xs={0} md={1} className='hidden md:flex justify-center'>
-          <div className='h-full w-[2px] bg-gray-400'></div>
-        </Col> */}
-
           {/* Carousel Section */}
-          <Col xs={24} md={21}>
+          <Col xs={24} sm={18}>
             <Carousel autoplay className="rounded-lg overflow-hidden shadow-lg">
               {slideImages.map((image, index) => (
                 <div key={index} className="text-center">
@@ -129,8 +77,8 @@ const Home = () => {
             </Carousel>
           </Col>
         </Row>
-        {/* flash sale  and  card */}
-        {/* Flash Sale */}
+
+        {/* Optional sections */}
         <FlashSale />
         <Enhance />
         <NewArrival />

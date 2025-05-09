@@ -9,25 +9,26 @@ import { Card, Spin, Breadcrumb } from "antd";
 const { Meta } = Card;
 
 const CategoryPage = () => {
-  const { id } = useParams();
-  const [categoryName, setCategoryName] = useState("");
+  const { categoryName } = useParams(); // Extract category from the URL
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`http://127.0.0.1:8000/store/category/${id}/`)
-      .then((res) => {
-        setCategoryName(res.data.name);
-      })
-      .catch(() => setCategoryName(""));
+    setLoading(true);
 
+    // Fetch all products
     axios
-      .get(`http://127.0.0.1:8000/store/products/?category=${id}`)
-      .then((res) => setProducts(res.data))
-      .catch((err) => console.error(err))
+      .get("http://127.0.0.1:8000/store/products/")
+      .then((res) => {
+        // Filter products based on category_name
+        const filteredProducts = res.data.filter(
+          (product) => product.category_name === categoryName
+        );
+        setProducts(filteredProducts);
+      })
+      .catch((err) => console.error("Error fetching products:", err))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [categoryName]);
 
   return (
     <div>
@@ -50,6 +51,8 @@ const CategoryPage = () => {
           <div className="text-center p-10">
             <Spin size="large" />
           </div>
+        ) : products.length === 0 ? (
+          <div>No products available in this category.</div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
@@ -63,7 +66,9 @@ const CategoryPage = () => {
                     className="h-60 object-cover"
                   />
                 }
-                onClick={() => (window.location.href = `/product/${product.id}`)}
+                onClick={() =>
+                  (window.location.href = `/product/${product.id}`)
+                } // Navigate to product details page
               >
                 <Meta
                   title={product.name}
