@@ -10,7 +10,7 @@ import Profile from "./Pages/Profile/profile";
 import AboutUs from "./Pages/AboutUs/AboutUs";
 import ContactUs from "./Pages/ContactUs/ContactUs";
 import CategoryPage from "./Pages/CategoryPage/CategoryPage";
-
+import ShopNow from "./Pages/Shop Now/ShopNow";
 const App = () => {
   return (
     <Router>
@@ -36,7 +36,12 @@ const App = () => {
 
         {/* Category Page Route */}
         <Route path="/category/:categoryName" element={<CategoryPage />} />
+
+        {/* Shop Now Route */}
+        <Route path="/shop-now" element={<ShopNow />} />
       </Routes>
+
+
     </Router>
   );
 };

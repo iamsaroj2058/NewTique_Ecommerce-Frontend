@@ -1,6 +1,9 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom"; 
+
 
 const Footer = () => {
+  const navigate = useNavigate();
   return (
     <footer className="bg-black text-[#FFA724] w-full px-10 py-12 mt-12">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -24,7 +27,7 @@ const Footer = () => {
         <div>
           <h3 className="text-xl font-semibold mb-3">Quick Links</h3>
           <ul className="space-y-2 text-sm">
-            <li><a href="#" className="hover:underline">Shop</a></li>
+            <li><a href="#" className="hover:underline" onClick={() => navigate("/shop-now")}>Shop Now</a></li>
             <li><a href="#" className="hover:underline">About Us</a></li>
             <li><a href="#" className="hover:underline">Contact</a></li>
             <li><a href="#" className="hover:underline">FAQs</a></li>

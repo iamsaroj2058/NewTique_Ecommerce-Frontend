@@ -6,30 +6,7 @@ import { Breadcrumb, Table } from "antd";
 
 
 const Addcart = () => {
-  // Define the cart items (products)
-  const dataSource = [
-    {
-      key: '1',
-      product: 'T-shirt',
-      price: '$20',
-      quantity: 2,
-      subtotal: '$40',
-    },
-    {
-      key: '2',
-      product: 'Hat',
-      price: '$15',
-      quantity: 1,
-      subtotal: '$15',
-    },
-    {
-      key: '3',
-      product: 'Sweater',
-      price: '$35',
-      quantity: 1,
-      subtotal: '$35',
-    },
-  ];
+  const { cartItems } = useCart(); // ✅ Access global cart
 
   const columns = [
     {
@@ -54,7 +31,18 @@ const Addcart = () => {
     },
   ];
 
-
+  const dataSource = cartItems.map((item, index) => ({
+    key: index,
+    product: (
+      <div className="flex items-center gap-3">
+        <img src={item.image} alt={item.name} className="h-12 w-12" />
+        <span>{item.name} ({item.color}/{item.size})</span>
+      </div>
+    ),
+    price: `Rs. ${item.price}`,
+    quantity: item.quantity,
+    subtotal: `Rs. ${item.subtotal}`,
+  }));
 
   return (
     <div>
@@ -67,8 +55,6 @@ const Addcart = () => {
             { title: "Add to Cart" },
           ]}
         />
-        
-        {/* Cart Table */}
         <div className="mt-6 max-w-7xl mx-auto px-6 py-6 ">
           <Table
             dataSource={dataSource}
