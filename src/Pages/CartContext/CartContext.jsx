@@ -5,32 +5,26 @@ import Footer from "../../Section/Footer/footer";
 import { Breadcrumb, Table } from "antd";
 
 
-const Addcart = () => {
-  const { cartItems } = useCart(); // ✅ Access global cart
-
-  const columns = [
+const CartContex = () => {
+  const cartItems = [
     {
-      title: 'Product',
-      dataIndex: 'product',
-      key: 'product',
-    },
-    {
-      title: 'Price',
-      dataIndex: 'price',
-      key: 'price',
-    },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'Subtotal',
-      dataIndex: 'subtotal',
-      key: 'subtotal',
+      image: "/images/sample.jpg",
+      name: "Sunglass",
+      color: "Black",
+      size: "M",
+      price: 1200,
+      quantity: 2,
+      subtotal: 2400,
     },
   ];
 
+  const columns = [
+    { title: "Product", dataIndex: "product", key: "product" },
+    { title: "Price", dataIndex: "price", key: "price" },
+    { title: "Quantity", dataIndex: "quantity", key: "quantity" },
+    { title: "Subtotal", dataIndex: "subtotal", key: "subtotal" },
+  ];
+  
   const dataSource = cartItems.map((item, index) => ({
     key: index,
     product: (
@@ -69,4 +63,4 @@ const Addcart = () => {
   );
 };
 
-export default Addcart;
+export default CartContex;

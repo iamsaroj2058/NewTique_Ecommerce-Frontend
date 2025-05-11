@@ -5,12 +5,13 @@ import SignUp from "./Pages/SignUp/signup";
 import Home from "./Pages/Home/Home";
 import Product_details from "./Pages/Product Details/product_details";
 import CheckOut from "./Pages/CheckOut/CheckOut";
-import Addcart from "./Pages/Add to Cart/addcart";
 import Profile from "./Pages/Profile/profile";
 import AboutUs from "./Pages/AboutUs/AboutUs";
 import ContactUs from "./Pages/ContactUs/ContactUs";
 import CategoryPage from "./Pages/CategoryPage/CategoryPage";
 import ShopNow from "./Pages/Shop Now/ShopNow";
+import CartContex from "./Pages/CartContext/CartContext";
+
 const App = () => {
   return (
     <Router>
@@ -28,7 +29,7 @@ const App = () => {
         <Route path="/product-details/:id" element={<Product_details />} />
 
         {/* Cart & Checkout */}
-        <Route path="/add-to-cart" element={<Addcart />} />
+        <Route path="/cartcontex" element={<CartContex />} />
         <Route path="/checkout" element={<CheckOut />} />
 
         {/* Profile Route */}

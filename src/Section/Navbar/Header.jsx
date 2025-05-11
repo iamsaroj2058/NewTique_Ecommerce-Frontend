@@ -95,7 +95,7 @@ const Header = () => {
 
                     <div className="flex items-center gap-4 ">
                     
-                      <Link to="/Home/add-to-cart" >
+                      <Link to="/cartcontex" >
                         <Badge count={2} size="small">
                           <ShoppingCartOutlined style={{ fontSize: "22px" }} />
                         </Badge>
