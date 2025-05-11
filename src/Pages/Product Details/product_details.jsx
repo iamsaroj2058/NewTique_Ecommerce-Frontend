@@ -75,6 +75,7 @@ const ProductDetails = () => {
       <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
         <Breadcrumb items={[{ title: "Home" }, { title: "Product Details" }]} />
 
+
         <div className="max-w-7xl mx-auto px-6 py-6 bg-white rounded-2xl shadow-md mt-8 grid md:grid-cols-2 gap-10">
           {/* Image carousel */}
           <div className="w-full">

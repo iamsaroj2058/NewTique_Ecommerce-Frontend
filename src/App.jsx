@@ -35,7 +35,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
 
         {/* Category Page Route */}
-        <Route path="/category/:id" element={<CategoryPage />} />
+        <Route path="/category/:categoryName" element={<CategoryPage />} />
       </Routes>
     </Router>
   );
