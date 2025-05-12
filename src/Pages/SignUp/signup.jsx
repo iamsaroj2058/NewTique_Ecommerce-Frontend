@@ -1,5 +1,14 @@
 import React from "react";
-import { Card, Input, Button, Space, Select, Typography, Form, Checkbox } from "antd";
+import {
+  Card,
+  Input,
+  Button,
+  Space,
+  Select,
+  Typography,
+  Form,
+  Checkbox,
+} from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import axios from "axios";
@@ -11,7 +20,6 @@ const SignUp = () => {
 
   // Define options for the Select component (Country Code)
   const options = [{ value: "+977", label: "+977" }];
-
   // const handleSubmit = (values) => {
   //   console.log("Form values:", values);
   // };
@@ -23,6 +31,7 @@ const SignUp = () => {
         password: values.password,
         full_name: values.fullName,
         phone: values.phone,
+        country_code: values.country_code
       });
 
       console.log("User registered:", response.data);
@@ -100,16 +109,13 @@ const SignUp = () => {
           </Form.Item>
 
           {/* Phone Number Field */}
-          <Form.Item
-            label="Phone Number"
-            required
-          >
+          <Form.Item label="Phone Number" required>
             <Space.Compact style={{ width: "100%" }}>
-              <Form.Item name="phonePrefix" noStyle initialValue="+977">
+              <Form.Item name="country_code" noStyle initialValue="+977">
                 <Select style={{ width: "30%" }} options={options} />
               </Form.Item>
               <Form.Item
-                name="phoneNumber"
+                name="phone"
                 noStyle
                 rules={[
                   {
@@ -122,11 +128,13 @@ const SignUp = () => {
                   },
                 ]}
               >
-                <Input style={{ width: "70%" }} placeholder="Enter your phone number" />
+                <Input
+                  style={{ width: "70%" }}
+                  placeholder="Enter your phone number"
+                />
               </Form.Item>
             </Space.Compact>
           </Form.Item>
-
 
           {/* Password Field */}
           <Form.Item
@@ -187,7 +195,9 @@ const SignUp = () => {
             rules={[
               {
                 validator: (_, value) =>
-                  value ? Promise.resolve() : Promise.reject("You must agree to the terms"),
+                  value
+                    ? Promise.resolve()
+                    : Promise.reject("You must agree to the terms"),
               },
             ]}
           >
@@ -197,7 +207,12 @@ const SignUp = () => {
           </Form.Item>
 
           {/* Submit Button */}
-          <Button type="primary" htmlType="submit" style={{ width: "100%" }} loading={loading}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ width: "100%" }}
+            loading={loading}
+          >
             Sign Up
           </Button>
         </Form>
