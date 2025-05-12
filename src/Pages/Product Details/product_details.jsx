@@ -23,12 +23,20 @@ const ProductDetails = () => {
   const [selectedSize, setSelectedSize] = useState("");
   const [reviews, setReviews] = useState([]);
 
+  const carouselSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  };
+
   useEffect(() => {
     axios
       .get(`http://127.0.0.1:8000/store/products/${id}/`)
       .then((res) => {
         setProduct(res.data);
-        setSelectedColor(res.data.colors?.[0] || ""); // optional
+        setSelectedColor(res.data.colors?.[0] || "");
         setSelectedSize(res.data.sizes?.[0] || "");
         if (res.data.reviews) setReviews(res.data.reviews);
       })
@@ -43,30 +51,56 @@ const ProductDetails = () => {
   const subtotal = product ? product.price * quantity : 0;
 
   const handleAddToCart = () => {
-    console.log("Added to cart:", {
-      product,
+    const cartItem = {
+      id: product.id,
+      image: product.images?.[0] || product.image,
+      name: product.name,
+      color: selectedColor,
+      size: selectedSize,
+      price: product.price,
       quantity,
-      selectedColor,
-      selectedSize,
-    });
+      subtotal: product.price * quantity,
+    };
+
+    const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingIndex = existingCart.findIndex(
+      (item) =>
+        item.id === cartItem.id &&
+        item.color === cartItem.color &&
+        item.size === cartItem.size
+    );
+
+    if (existingIndex >= 0) {
+      existingCart[existingIndex].quantity += quantity;
+      existingCart[existingIndex].subtotal =
+        existingCart[existingIndex].quantity *
+        existingCart[existingIndex].price;
+    } else {
+      existingCart.push(cartItem);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(existingCart));
+    window.dispatchEvent(new Event("storage")); // notify header
+    // navigate("/cart");
   };
 
   const handleBuyNow = () => {
-    console.log("Buy Now:", { product, quantity });
+    const item = {
+      id: product.id,
+      image: product.images?.[0] || product.image,
+      name: product.name,
+      color: selectedColor,
+      size: selectedSize,
+      price: product.price,
+      quantity,
+      subtotal: product.price * quantity,
+    };
+    localStorage.setItem("buyNowItem", JSON.stringify(item));
     navigate("/checkout");
   };
 
-  const carouselSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    beforeChange: (_, newIdx) => setSelectedImage(newIdx),
-  };
-
-  if (!product)
-    return <div className="p-10 text-center">Loading product...</div>;
+  if (!product) return <div className="text-center py-10">Loading...</div>;
 
   return (
     <div>
@@ -79,7 +113,7 @@ const ProductDetails = () => {
           {/* Image carousel */}
           <div className="w-full">
             <div className="p-2 border rounded-xl bg-gray-100">
-              {product.images && product.images.length > 0 ? (
+              {product.images?.length > 0 ? (
                 <Slider ref={sliderRef} {...carouselSettings}>
                   {product.images.map((img, i) => (
                     <div key={i} className="flex justify-center">
@@ -104,7 +138,7 @@ const ProductDetails = () => {
 
             {/* Thumbnails */}
             <div className="flex gap-4 mt-4 flex-wrap">
-              {(product.images && product.images.length > 0
+              {(product.images?.length > 0
                 ? product.images
                 : [product.image]
               ).map((img, index) => (
