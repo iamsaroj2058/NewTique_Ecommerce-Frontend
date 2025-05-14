@@ -4,7 +4,7 @@ import axios from "axios";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
-import { Breadcrumb, Button, Rate } from "antd";
+import { Breadcrumb, Button, Rate, Modal } from "antd";
 import { TruckOutlined, ReloadOutlined } from "@ant-design/icons";
 import Slider from "react-slick";
 
@@ -22,6 +22,7 @@ const ProductDetails = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [reviews, setReviews] = useState([]);
+  const [isLoginPromptVisible, setIsLoginPromptVisible] = useState(false);
 
   const carouselSettings = {
     dots: true,
@@ -47,10 +48,27 @@ const ProductDetails = () => {
 
   const increaseQuantity = () => setQuantity((q) => q + 1);
   const decreaseQuantity = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
-
   const subtotal = product ? product.price * quantity : 0;
 
+  const isUserLoggedIn = () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      return !!(user && user.email);
+    } catch {
+      return false;
+    }
+  };
+
+  const showLoginPrompt = () => {
+    setIsLoginPromptVisible(true);
+  };
+
   const handleAddToCart = () => {
+    if (!isUserLoggedIn()) {
+      showLoginPrompt();
+      return;
+    }
+
     const cartItem = {
       id: product.id,
       image: product.images?.[0] || product.image,
@@ -62,8 +80,9 @@ const ProductDetails = () => {
       subtotal: product.price * quantity,
     };
 
-    const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
-
+    const user = JSON.parse(localStorage.getItem("user"));
+    const cartKey = `cart_${user.email}`;
+    const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
     const existingIndex = existingCart.findIndex(
       (item) =>
         item.id === cartItem.id &&
@@ -80,12 +99,17 @@ const ProductDetails = () => {
       existingCart.push(cartItem);
     }
 
-    localStorage.setItem("cart", JSON.stringify(existingCart));
-    window.dispatchEvent(new Event("storage")); // notify header
-    // navigate("/cart");
+    localStorage.setItem(cartKey, JSON.stringify(existingCart));
+    window.dispatchEvent(new Event("storage")); // Update header cart count
+    alert("✅ Item added to cart!");
   };
 
   const handleBuyNow = () => {
+    if (!isUserLoggedIn()) {
+      showLoginPrompt();
+      return;
+    }
+
     const item = {
       id: product.id,
       image: product.images?.[0] || product.image,
@@ -100,6 +124,26 @@ const ProductDetails = () => {
     navigate("/checkout");
   };
 
+  const handleLoginRedirect = () => {
+    navigate("/login");
+    setIsLoginPromptVisible(false);
+  };
+
+  const handleSignupRedirect = () => {
+    navigate("/signup");
+    setIsLoginPromptVisible(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsLoginPromptVisible(false);
+  };
+
+  useEffect(() => {
+    if (isUserLoggedIn()) {
+      setIsLoginPromptVisible(false);
+    }
+  }, []);
+
   if (!product) return <div className="text-center py-10">Loading...</div>;
 
   return (
@@ -110,7 +154,7 @@ const ProductDetails = () => {
         <Breadcrumb items={[{ title: "Home" }, { title: "Product Details" }]} />
 
         <div className="max-w-7xl mx-auto px-6 py-6 bg-white rounded-2xl shadow-md mt-8 grid md:grid-cols-2 gap-10">
-          {/* Image carousel */}
+          {/* Image Carousel */}
           <div className="w-full">
             <div className="p-2 border rounded-xl bg-gray-100">
               {product.images?.length > 0 ? (
@@ -180,47 +224,51 @@ const ProductDetails = () => {
               </sub>
             </p>
 
-            {/* Color selection */}
-            <div className="mt-4">
-              <p className="font-semibold mb-2">Color:</p>
-              <div className="flex space-x-3">
-                {(product.colors || []).map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setSelectedColor(color)}
-                    className={`px-4 py-1 rounded-full border ${
-                      selectedColor === color
-                        ? "border-blue-500 bg-blue-100"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {color}
-                  </button>
-                ))}
+            {/* Color Selection */}
+            {product.colors?.length > 0 && (
+              <div className="mt-4">
+                <p className="font-semibold mb-2">Color:</p>
+                <div className="flex space-x-3">
+                  {product.colors.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setSelectedColor(color)}
+                      className={`px-4 py-1 rounded-full border ${
+                        selectedColor === color
+                          ? "border-blue-500 bg-blue-100"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {color}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Size selection */}
-            <div className="mt-4">
-              <p className="font-semibold mb-2">Size:</p>
-              <div className="flex space-x-3">
-                {(product.sizes || []).map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-1 rounded border ${
-                      selectedSize === size
-                        ? "border-blue-500 bg-blue-100"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {/* Size Selection */}
+            {product.sizes?.length > 0 && (
+              <div className="mt-4">
+                <p className="font-semibold mb-2">Size:</p>
+                <div className="flex space-x-3">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`px-4 py-1 rounded border ${
+                        selectedSize === size
+                          ? "border-blue-500 bg-blue-100"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Quantity selector */}
+            {/* Quantity Selector */}
             <div className="mt-6 flex items-center space-x-4">
               <span className="text-lg font-medium">Quantity:</span>
               <div className="flex items-center border rounded px-3 py-1">
@@ -255,7 +303,7 @@ const ProductDetails = () => {
               </Button>
             </div>
 
-            {/* Extra Info */}
+            {/* Info Icons */}
             <div className="border-2 rounded-md mt-4 p-6 bg-white">
               <div className="flex items-start gap-4">
                 <TruckOutlined className="text-2xl text-blue-500 mt-1" />
@@ -299,6 +347,26 @@ const ProductDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Login Prompt Modal */}
+      <Modal
+        open={isLoginPromptVisible}
+        onCancel={handleCloseModal}
+        footer={null}
+        closable={true}
+        maskClosable={true}
+        title={<div className="text-center font-semibold">Please Login</div>}
+      >
+        <div className="flex justify-center gap-4">
+          <Button onClick={handleLoginRedirect} type="primary">
+            Login
+          </Button>
+          <Button onClick={handleSignupRedirect} type="default">
+            Sign Up
+          </Button>
+        </div>
+      </Modal>
+
       <Footer />
     </div>
   );

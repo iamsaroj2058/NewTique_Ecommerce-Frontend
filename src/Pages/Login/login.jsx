@@ -24,6 +24,8 @@ const Login = () => {
       const { token, user } = response.data;
 
       localStorage.setItem("authToken", token);
+      localStorage.setItem("user", JSON.stringify(user));
+
       console.log("User logged in:", user);
       alert("🎉 Login successful!");
       navigate("/");

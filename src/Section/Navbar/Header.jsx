@@ -62,7 +62,9 @@ const Header = () => {
 
   // ✅ Function to update cart count from localStorage
   const updateCartCount = () => {
-    const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const user = JSON.parse(localStorage.getItem("user"));
+    const cartKey = `cart_${user?.email}`;
+    const cartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
     setCartCount(cartItems.length);
   };
 

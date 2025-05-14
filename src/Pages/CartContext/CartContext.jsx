@@ -9,24 +9,27 @@ const CartContex = () => {
   const [cartItems, setCartItems] = useState([]);
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem("user"));
+  const cartKey = `cart_${user?.email}`;
+
   // Load cart on mount
   useEffect(() => {
     const loadCart = () => {
-      const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+      const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];
       setCartItems(storedCart);
     };
 
     loadCart();
     window.addEventListener("storage", loadCart);
     return () => window.removeEventListener("storage", loadCart);
-  }, []);
+  }, [cartKey]);
 
   // Delete item from cart
   const handleDelete = (index) => {
     const updatedCart = [...cartItems];
     updatedCart.splice(index, 1);
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
     window.dispatchEvent(new Event("storage")); // notify others
     message.success("Item removed from cart");
   };
