@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, Typography, Input, Badge } from "antd";
+import { Menu, Typography, Input, Badge, Button } from "antd";
 import {
   ShoppingCartOutlined,
-  HeartOutlined,
+  LoginOutlined,
+  UserAddOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 
@@ -12,11 +13,35 @@ const { Search } = Input;
 
 const Header = () => {
   const [cartCount, setCartCount] = useState(0);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   const onSearch = (value) => console.log(value);
 
-  // Menu Items
+  const updateCartCount = () => {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    const cartKey = `cart_${currentUser?.email}`;
+    const cartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
+    setCartCount(cartItems.length);
+  };
+
+  useEffect(() => {
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    setUser(currentUser);
+    updateCartCount();
+
+    const handleStorageChange = () => {
+      const updatedUser = JSON.parse(localStorage.getItem("user"));
+      setUser(updatedUser);
+      updateCartCount();
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const menuItems = [
     {
       key: "home",
@@ -48,40 +73,22 @@ const Header = () => {
         </Link>
       ),
     },
-    {
-      key: "signup",
-      label: (
-        <Link to="/signup">
-          <Text strong className="text-base md:text-lg">
-            Sign Up
-          </Text>
-        </Link>
-      ),
-    },
+    // 👇 Only show Sign Up if not logged in
+    // ...(!user
+    //   ? [
+    //       {
+    //         key: "signup",
+    //         label: (
+    //           <Link to="/signup">
+    //             <Text strong className="text-base md:text-lg">
+    //               Sign Up
+    //             </Text>
+    //           </Link>
+    //         ),
+    //       },
+    //     ]
+    //   : []),
   ];
-
-  // ✅ Function to update cart count from localStorage
-  const updateCartCount = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const cartKey = `cart_${user?.email}`;
-    const cartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
-    setCartCount(cartItems.length);
-  };
-
-  // ✅ On component mount
-  useEffect(() => {
-    updateCartCount();
-
-    // ✅ Listen to cart updates via localStorage changes
-    const handleStorageChange = () => {
-      updateCartCount();
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
 
   return (
     <nav className="bg-white shadow-md w-full px-6 md:px-10 mb-[16px]">
@@ -108,20 +115,29 @@ const Header = () => {
                 className="w-3xs"
               />
 
+              {/* ✅ Right-side Icons */}
               <div className="flex items-center gap-4">
-                <Link to="/cartcontex">
-                  <Badge count={cartCount} size="small">
-                    <ShoppingCartOutlined style={{ fontSize: "22px" }} />
-                  </Badge>
-                </Link>
-
-                {/* <Link to="/wishlist">
-                  <HeartOutlined style={{ fontSize: "22px" }} />
-                </Link> */}
-
-                <Link to="/Profile">
-                  <UserOutlined style={{ fontSize: "22px" }} />
-                </Link>
+                {user ? (
+                  <>
+                    <Link to="/cartcontex">
+                      <Badge count={cartCount} size="small">
+                        <ShoppingCartOutlined style={{ fontSize: "22px" }} />
+                      </Badge>
+                    </Link>
+                    <Link to="/Profile">
+                      <UserOutlined style={{ fontSize: "22px" }} />
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Button type="primary" onClick={() => navigate("/login")}>
+                      Login
+                    </Button>
+                    <Button type="default" onClick={() => navigate("/signup")}>
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
