@@ -2,48 +2,73 @@ import React, { useState } from "react";
 import { Card, Input, Button, Space, Typography, Form, Checkbox } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import ForgotPassword from "../../Components/Model/forgotpassword";
-import axios from "axios"; 
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const { Text, Link } = Typography;
 
 const Login = () => {
-  const [isModalVisible, setIsModalVisible] = useState(false); // State to control modal visibility
-  const navigate = useNavigate(); // Initialize the navigate function
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Handle form submission
   const handleSubmit = async (values) => {
+    setLoading(true); // Start loading
+
     try {
       const response = await axios.post("http://localhost:8000/api/login/", {
         email: values.email,
         password: values.password,
       });
-  
+
       const { token, user } = response.data;
-  
-      // Save token for authenticated requests later
+
       localStorage.setItem("authToken", token);
-  
       console.log("User logged in:", user);
-      alert("Login successful!");
-  
-      // Redirect to the dashboard after successful login
-      navigate("/");  // Navigate to the dashboard page
+      alert("🎉 Login successful!");
+      navigate("/");
     } catch (error) {
       console.error("Login error:", error.response?.data || error.message);
-      alert("Login failed: " + JSON.stringify(error.response?.data || error.message));
+
+      if (error.response) {
+        const errorData = error.response.data;
+
+        if (errorData.non_field_errors) {
+          alert("❌ Incorrect email or password. Please try again.");
+        } else if (errorData.detail === "Invalid credentials") {
+          alert("❌ Invalid email or password.");
+        } else if (errorData.email?.includes("not found")) {
+          alert("📧 This email is not registered. Please sign up first.");
+        } else if (errorData.password?.includes("incorrect")) {
+          alert("🔐 Incorrect password. Please try again.");
+        } else if (errorData && typeof errorData === "object") {
+          const readableErrors = Object.entries(errorData)
+            .map(([field, msgs]) => {
+              const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+              const messageText = Array.isArray(msgs)
+                ? msgs.join(", ")
+                : typeof msgs === "string"
+                ? msgs
+                : "Invalid input";
+              return `${fieldName}: ${messageText}`;
+            })
+            .join("\n");
+          alert("⚠️ Please fix the following:\n" + readableErrors);
+        } else {
+          alert("❌ Login failed. Please check your input.");
+        }
+      } else if (error.request) {
+        alert("🔌 Server not responding. Please try again later.");
+      } else {
+        alert("⚠️ Unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
-  // Show the modal
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
-
-  // Close the modal
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-  };
+  const showModal = () => setIsModalVisible(true);
+  const handleCloseModal = () => setIsModalVisible(false);
 
   return (
     <div
@@ -60,39 +85,25 @@ const Login = () => {
         </Typography.Title>
 
         <Form onFinish={handleSubmit} layout="vertical">
-          {/* Email Field */}
           <Form.Item
             label="Email"
             name="email"
             rules={[
-              {
-                required: true,
-                message: "Please enter your email",
-              },
-              {
-                type: "email",
-                message: "Please enter a valid email address",
-              },
+              { required: true, message: "Please enter your email" },
+              { type: "email", message: "Enter a valid email address" },
             ]}
           >
             <Input placeholder="Enter Your Email" prefix={<UserOutlined />} />
           </Form.Item>
 
-          {/* Password Field */}
           <Form.Item
             label="Password"
             name="password"
-            rules={[
-              {
-                required: true,
-                message: "Please enter your password",
-              },
-            ]}
+            rules={[{ required: true, message: "Please enter your password" }]}
           >
             <Input.Password placeholder="Enter Your Password" />
           </Form.Item>
 
-          {/* Remember Me Checkbox and Forgot Password Link in the same line */}
           <Space style={{ width: "100%", justifyContent: "space-between" }}>
             <Form.Item
               name="remember"
@@ -101,43 +112,29 @@ const Login = () => {
             >
               <Checkbox>Remember me</Checkbox>
             </Form.Item>
-
-            {/* Forgot Password Link */}
-            <Link
-              style={{ fontSize: "14px", marginBottom: "0" }}
-              onClick={showModal} // Open modal when clicked
-            >
-              Forgot Password?
-            </Link>
+            <Link onClick={showModal}>Forgot Password?</Link>
           </Space>
 
-          {/* Submit Button */}
-          <Button type="primary" htmlType="submit" style={{ width: "100%" }}>
-            Login
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+            style={{ width: "100%" }}
+          >
+            {loading ? "Logging in..." : "Login"}
           </Button>
         </Form>
 
         <Space
-          style={{
-            width: "100%",
-            justifyContent: "center",
-            textAlign: "center",
-            marginTop: "16px",
-          }}
-          direction="vertical"
+          style={{ width: "100%", justifyContent: "center", marginTop: "16px" }}
         >
-          {/* Sign Up Link */}
           <Text>
             Don't have an account? <Link href="/signup">Sign Up</Link>
           </Text>
         </Space>
       </Card>
 
-      {/* Forgot Password Modal */}
-      <ForgotPassword
-        visible={isModalVisible} // Pass visibility state to modal
-        onClose={handleCloseModal} // Pass function to close modal
-      />
+      <ForgotPassword visible={isModalVisible} onClose={handleCloseModal} />
     </div>
   );
 };

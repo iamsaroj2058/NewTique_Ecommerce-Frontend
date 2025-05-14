@@ -12,46 +12,67 @@ import {
 import { UserOutlined } from "@ant-design/icons";
 import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Text, Link } = Typography;
 
 const SignUp = () => {
   const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const navigate = useNavigate();
 
   // Define options for the Select component (Country Code)
   const options = [{ value: "+977", label: "+977" }];
-  // const handleSubmit = (values) => {
-  //   console.log("Form values:", values);
-  // };
-  const [loading, setLoading] = React.useState(false);
+
   const handleSubmit = async (values) => {
+    setLoading(true);
     try {
       const response = await axios.post("http://localhost:8000/api/register/", {
         email: values.email,
         password: values.password,
         full_name: values.fullName,
         phone: values.phone,
-        country_code: values.country_code
+        country_code: values.country_code,
       });
 
       console.log("User registered:", response.data);
-      alert("Registered successfully!");
+      alert("🎉 Registered successfully!");
+      navigate("/login");
     } catch (error) {
       if (error.response) {
-        // Server responded with a non-2xx status
-        console.error("Registration error:", error.response.data);
-        alert("Registration failed: " + JSON.stringify(error.response.data));
+        const errorData = error.response.data;
+
+        if (
+          JSON.stringify(errorData).includes("phone") &&
+          JSON.stringify(errorData).includes("already exists")
+        ) {
+          alert("📱 This mobile number is already in use. Try another number.");
+        } else if (
+          JSON.stringify(errorData).includes("email") &&
+          JSON.stringify(errorData).includes("already exists")
+        ) {
+          alert("📧 This email is already registered. Try logging in.");
+        } else if (errorData && typeof errorData === "object") {
+          const readableErrors = Object.entries(errorData)
+            .map(
+              ([field, msgs]) =>
+                `${field.charAt(0).toUpperCase() + field.slice(1)}: ${msgs.join(
+                  ", "
+                )}`
+            )
+            .join("\n");
+
+          alert("Please correct the following:\n" + readableErrors);
+        } else {
+          alert("❌ Registration failed. Please check your input.");
+        }
       } else if (error.request) {
-        // No response received
-        console.error("No response from server:", error.request);
-        alert("No response from the server. Please try again later.");
+        alert("🔌 No response from server. Please try again later.");
       } else {
-        // Something else caused the error
-        console.error("Error setting up the request:", error.message);
-        alert("An error occurred. Please try again.");
+        alert("⚠️ An unexpected error occurred. Please try again.");
       }
     } finally {
-      setLoading(false); // End loading when done
+      setLoading(false);
     }
   };
 
@@ -227,7 +248,7 @@ const SignUp = () => {
           direction="vertical"
         >
           <Text>
-            Already have an account? <Link href="/Login">Login</Link>
+            Already have an account? <Link href="/login">Login</Link>
           </Text>
         </Space>
       </Card>

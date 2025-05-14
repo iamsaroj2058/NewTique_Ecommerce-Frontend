@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
+import axios from "axios";
+
 import {
   Breadcrumb,
   Button,
@@ -13,9 +15,6 @@ import {
   Layout,
   Menu,
   Typography,
-  Select,
-  Checkbox,
-  Space,
 } from "antd";
 import {
   UserOutlined,
@@ -25,6 +24,7 @@ import {
   EyeTwoTone,
   LogoutOutlined,
 } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const { Content, Sider } = Layout;
 const { Link } = Typography;
@@ -34,6 +34,8 @@ const Profile = () => {
   const [isOrderModalVisible, setIsOrderModalVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [activeMenu, setActiveMenu] = useState("userInfo");
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const navigate = useNavigate();
 
   const showModal = () => setIsModalVisible(true);
   const handleCancel = () => setIsModalVisible(false);
@@ -45,6 +47,63 @@ const Profile = () => {
   };
 
   const handleOrderModalCancel = () => setIsOrderModalVisible(false);
+
+  const showLogoutModal = () => {
+    setLogoutModalVisible(true);
+  };
+
+  const confirmLogout = () => {
+    setLogoutModalVisible(false);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const cancelLogout = () => {
+    setLogoutModalVisible(false);
+  };
+
+  const handlePasswordChange = async (values) => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token) {
+        alert("Please login to change your password.");
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:8000/api/change-password/",
+        {
+          current_password: values.currentPassword,
+          new_password: values.newPassword,
+          confirm_password: values.confirmPassword,
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert("Password changed successfully!");
+        navigate("/"); // Redirect to home page
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        alert("Session expired. Please log in again.");
+        localStorage.removeItem("authToken");
+        navigate("/login");
+      } else {
+        alert(
+          error.response?.data?.error ||
+            "Failed to change password. Please check your current password."
+        );
+      }
+    }
+  };
 
   const orderData = [
     {
@@ -66,9 +125,7 @@ const Profile = () => {
       date: "2025-04-18",
       status: "Pending",
       total: "$85.00",
-      products: [
-        { name: "Product C", quantity: 1, price: "$85.00" },
-      ],
+      products: [{ name: "Product C", quantity: 1, price: "$85.00" }],
       address: "Pokhara, Nepal",
       paymentMethod: "Khalti",
     },
@@ -113,13 +170,19 @@ const Profile = () => {
       <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
         <Breadcrumb items={[{ title: "Home" }, { title: "Profile" }]} />
 
-        <Layout className=" mt-6 bg-white shadow rounded-xl">
+        <Layout className="mt-6 bg-white shadow rounded-xl">
           <Sider width={250} className="bg-white border-r">
             <Menu
               mode="inline"
               defaultSelectedKeys={["userInfo"]}
               selectedKeys={[activeMenu]}
-              onClick={(e) => setActiveMenu(e.key)}
+              onClick={(e) => {
+                if (e.key === "Logout") {
+                  showLogoutModal(); // ✅ Show confirm modal
+                } else {
+                  setActiveMenu(e.key);
+                }
+              }}
               className="h-full"
             >
               <Menu.Item key="userInfo" icon={<UserOutlined />}>
@@ -136,13 +199,18 @@ const Profile = () => {
               </Menu.Item>
             </Menu>
           </Sider>
+
           <Content className="p-6">
             {activeMenu === "userInfo" && (
               <div>
                 <Descriptions title="User Profile" bordered column={1}>
                   <Descriptions.Item label="Name">Saroj</Descriptions.Item>
-                  <Descriptions.Item label="Email">saroj@example.com</Descriptions.Item>
-                  <Descriptions.Item label="Phone">+977-9800000000</Descriptions.Item>
+                  <Descriptions.Item label="Email">
+                    saroj@example.com
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Phone">
+                    +977-9800000000
+                  </Descriptions.Item>
                 </Descriptions>
                 <Button type="primary" className="mt-4" onClick={showModal}>
                   Edit Profile
@@ -150,7 +218,7 @@ const Profile = () => {
 
                 <Modal
                   title="Edit Profile"
-                  visible={isModalVisible}
+                  open={isModalVisible}
                   onOk={handleOk}
                   onCancel={handleCancel}
                 >
@@ -158,7 +226,9 @@ const Profile = () => {
                     <Form.Item
                       label="Name"
                       name="name"
-                      rules={[{ required: true, message: "Please enter your name" }]}
+                      rules={[
+                        { required: true, message: "Please enter your name" },
+                      ]}
                     >
                       <Input placeholder="Enter your name" />
                     </Form.Item>
@@ -167,7 +237,10 @@ const Profile = () => {
                       name="email"
                       rules={[
                         { required: true, message: "Please enter your email" },
-                        { type: "email", message: "Please enter a valid email address" },
+                        {
+                          type: "email",
+                          message: "Please enter a valid email address",
+                        },
                       ]}
                     >
                       <Input placeholder="Enter your email" />
@@ -176,10 +249,14 @@ const Profile = () => {
                       label="Phone"
                       name="phone"
                       rules={[
-                        { required: true, message: "Please enter your phone number" },
+                        {
+                          required: true,
+                          message: "Please enter your phone number",
+                        },
                         {
                           pattern: /^[0-9]{10}$/,
-                          message: "Please enter a valid phone number (10 digits)",
+                          message:
+                            "Please enter a valid phone number (10 digits)",
                         },
                       ]}
                     >
@@ -192,12 +269,18 @@ const Profile = () => {
 
             {activeMenu === "orderHistory" && (
               <div>
-                <Table columns={columns} dataSource={orderData} pagination={false} />
+                <Table
+                  columns={columns}
+                  dataSource={orderData}
+                  pagination={false}
+                />
                 <Modal
                   title="Order Details"
-                  visible={isOrderModalVisible}
+                  open={isOrderModalVisible}
                   onCancel={handleOrderModalCancel}
-                  footer={<Button onClick={handleOrderModalCancel}>Close</Button>}
+                  footer={
+                    <Button onClick={handleOrderModalCancel}>Close</Button>
+                  }
                 >
                   {selectedOrder && (
                     <div className="space-y-4">
@@ -222,11 +305,14 @@ const Profile = () => {
                         </Descriptions.Item>
                       </Descriptions>
                       <div>
-                        <h4 className="text-lg font-semibold mt-4 mb-2">Products:</h4>
+                        <h4 className="text-lg font-semibold mt-4 mb-2">
+                          Products:
+                        </h4>
                         <ul className="list-disc pl-6">
                           {selectedOrder.products.map((product, index) => (
                             <li key={index}>
-                              {product.name} × {product.quantity} — {product.price}
+                              {product.name} × {product.quantity} —{" "}
+                              {product.price}
                             </li>
                           ))}
                         </ul>
@@ -239,66 +325,92 @@ const Profile = () => {
 
             {activeMenu === "changePassword" && (
               <div className="max-w-md">
-                <Form layout="vertical">
+                <Form layout="vertical" onFinish={handlePasswordChange}>
                   <Form.Item
                     label="Current Password"
                     name="currentPassword"
-                    rules={[{ required: true, message: "Please enter your current password" }]}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Please enter your current password",
+                      },
+                    ]}
                   >
                     <Input.Password placeholder="Enter current password" />
                   </Form.Item>
+
                   <Form.Item
                     label="New Password"
                     name="newPassword"
                     rules={[
-                      { required: true, message: "Please enter your new password" },
-                      { min: 6, message: "Password must be at least 6 characters" },
+                      {
+                        required: true,
+                        message: "Please enter your new password",
+                      },
+                      {
+                        min: 6,
+                        message: "Password must be at least 6 characters",
+                      },
                     ]}
                   >
                     <Input.Password
                       placeholder="Enter new password"
-                      iconRender={(visible) => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
                     />
                   </Form.Item>
+
                   <Form.Item
                     label="Confirm New Password"
                     name="confirmPassword"
                     dependencies={["newPassword"]}
                     rules={[
-                      { required: true, message: "Please confirm your new password" },
+                      {
+                        required: true,
+                        message: "Please confirm your new password",
+                      },
                       ({ getFieldValue }) => ({
                         validator(_, value) {
-                          if (!value || getFieldValue("newPassword") === value) {
+                          if (
+                            !value ||
+                            getFieldValue("newPassword") === value
+                          ) {
                             return Promise.resolve();
                           }
-                          return Promise.reject(new Error("The two passwords do not match"));
+                          return Promise.reject(
+                            new Error("Passwords do not match")
+                          );
                         },
                       }),
                     ]}
                   >
                     <Input.Password
                       placeholder="Confirm new password"
-                      iconRender={(visible) => visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />}
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
                     />
                   </Form.Item>
-                  <Button type="primary">Change Password</Button>
+
+                  <Button type="primary" htmlType="submit">
+                    Change Password
+                  </Button>
                 </Form>
               </div>
             )}
-              {activeMenu === "Logout" && (
-                <div>
-                  <Descriptions title="Are you sure you want to logout?" bordered column={1}>
-                  
-                  </Descriptions>
-                  <Button type="primary" className="mt-4" onClick={showModal}>
-                 Yes
-                </Button>
-                <Button  className="mt-4 ml-4" onClick={showModal}>
-                  No
-                </Button>
 
-                </div>
-)}
+            {/* Logout Confirmation Modal */}
+            <Modal
+              title="Confirm Logout"
+              open={logoutModalVisible}
+              onOk={confirmLogout}
+              onCancel={cancelLogout}
+              okText="Yes, Logout"
+              cancelText="Cancel"
+            >
+              <p>Are you sure you want to logout?</p>
+            </Modal>
           </Content>
         </Layout>
       </div>
