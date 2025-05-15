@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
@@ -162,7 +162,16 @@ const Profile = () => {
       ),
     },
   ];
+  const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      navigate("/login"); // Redirect if not logged in
+    }
+  }, []);
   return (
     <>
       <Topheader />
@@ -204,12 +213,14 @@ const Profile = () => {
             {activeMenu === "userInfo" && (
               <div>
                 <Descriptions title="User Profile" bordered column={1}>
-                  <Descriptions.Item label="Name">Saroj</Descriptions.Item>
+                  <Descriptions.Item label="Name">
+                    {user?.name || "N/A"}
+                  </Descriptions.Item>
                   <Descriptions.Item label="Email">
-                    saroj@example.com
+                    {user?.email || "N/A"}
                   </Descriptions.Item>
                   <Descriptions.Item label="Phone">
-                    +977-9800000000
+                    {user?.phone || "N/A"}
                   </Descriptions.Item>
                 </Descriptions>
                 <Button type="primary" className="mt-4" onClick={showModal}>
