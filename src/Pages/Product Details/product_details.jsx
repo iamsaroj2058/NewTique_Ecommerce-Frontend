@@ -46,7 +46,11 @@ const ProductDetails = () => {
       });
   }, [id]);
 
-  const increaseQuantity = () => setQuantity((q) => q + 1);
+  const increaseQuantity = () => {
+    if (quantity < product.stock) {
+      setQuantity((q) => q + 1);
+    }
+  };
   const decreaseQuantity = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
   const subtotal = product ? product.price * quantity : 0;
 
@@ -213,8 +217,14 @@ const ProductDetails = () => {
             <h1 className="text-2xl font-bold">{product.name}</h1>
             <p className="mt-2 text-gray-600">{product.description}</p>
 
-            <div className="text-xl font-bold text-green-500 mt-2">
-              In Stock
+            <div
+              className={`text-xl font-bold mt-2 ${
+                product.stock > 0 ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {product.stock > 0
+                ? `In Stock (${product.stock})`
+                : "Out of Stock"}
             </div>
 
             <p className="mt-4 text-2xl text-orange-500 font-bold">
@@ -295,10 +305,19 @@ const ProductDetails = () => {
 
             {/* Action Buttons */}
             <div className="mt-6">
-              <Button type="primary" onClick={handleBuyNow}>
+              <Button
+                type="primary"
+                onClick={handleBuyNow}
+                disabled={product.stock === 0}
+              >
                 Buy Now
               </Button>
-              <Button type="default" className="ml-4" onClick={handleAddToCart}>
+              <Button
+                type="default"
+                className="ml-4"
+                onClick={handleAddToCart}
+                disabled={product.stock === 0}
+              >
                 Add to Cart
               </Button>
             </div>
