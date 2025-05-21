@@ -29,7 +29,7 @@ const Home = () => {
       .get("http://127.0.0.1:8000/store/products/")
       .then((res) => {
         setProducts(res.data);
-        
+
         // Extract unique category names
         const categoryNames = [
           ...new Set(res.data.map((product) => product.category_name)),
@@ -46,24 +46,26 @@ const Home = () => {
       <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px]">
         <Row gutter={[24, 24]} align="top" className="w-full">
           {/* Categories Sidebar */}
-          <Col xs={24} sm={6} className="text-lg">
-            <div className="space-y-4">
+          <Col xs={24} sm={4} className="text-lg">
+            <div className="space-y-2">
               {categories.map((category, index) => (
-                <div key={index} className="hover:bg-[#FFA724] rounded-[4px]">
+                <div key={index} className="pb-2">
                   <Button
                     type="text"
                     block
-                    onClick={() => navigate(`/category/${category}`)} // Navigate to category page
+                    className="text-left font-bold hover:bg-[#FFA724] rounded-[2px] w-full"
+                    onClick={() => navigate(`/category/${category}`)}
                   >
                     {category}
                   </Button>
+                  <hr className="border-t border-gray-300 mt-1" />
                 </div>
               ))}
             </div>
           </Col>
 
           {/* Carousel Section */}
-          <Col xs={24} sm={18}>
+          <Col xs={24} sm={20}>
             <Carousel autoplay className="rounded-lg overflow-hidden shadow-lg">
               {slideImages.map((image, index) => (
                 <div key={index} className="text-center">
