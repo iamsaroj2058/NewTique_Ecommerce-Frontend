@@ -16,8 +16,11 @@ const Header = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-  const onSearch = (value) => console.log(value);
-
+  const onSearch = (value) => {
+    if (value.trim()) {
+      navigate(`/shop-now?query=${encodeURIComponent(value.trim())}`);
+    }
+  };
   const updateCartCount = () => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
     const cartKey = `cart_${currentUser?.email}`;
