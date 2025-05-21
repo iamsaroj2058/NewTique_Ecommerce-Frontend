@@ -12,44 +12,71 @@ const CheckOut = () => {
     setLoading(true);
 
     try {
-      const amount = 1000; // Set this dynamically if needed
+      const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
+      if (!buyNowItem) {
+        alert(
+          "No item found for purchase. Please go back and select a product."
+        );
+        return;
+      }
 
-      // Call Django API to initiate payment
+      const payload = {
+        amount: buyNowItem.subtotal,
+        product_id: buyNowItem.id,
+        product_name: buyNowItem.name,
+        buyer_name: values.name,
+        email: values.email,
+        phone: values.phone,
+        address: values.billingAddress,
+      };
+
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         "http://localhost:8000/api/esewa/initiate/",
+        payload,
         {
-          amount: amount,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
+      // eSewa v2: Create and submit the payment form
       const form = document.createElement("form");
       form.method = "POST";
       form.action = response.data.esewa_url;
 
-      const keys = [
-        "amt",
-        "pdc",
-        "psc",
-        "txAmt",
-        "tAmt",
-        "pid",
-        "scd",
-        "su",
-        "fu",
-      ];
+      const fields = {
+        amount: response.data.amount,
+        tax_amount: response.data.tax_amount,
+        total_amount: response.data.total_amount,
+        transaction_uuid: response.data.transaction_uuid,
+        product_code: response.data.product_code,
+        product_service_charge: response.data.product_service_charge,
+        product_delivery_charge: response.data.product_delivery_charge,
+        success_url: response.data.success_url,
+        failure_url: response.data.failure_url,
+        signed_field_names: response.data.signed_field_names,
+        signature: response.data.signature,
+      };
 
-      keys.forEach((key) => {
+      for (const [key, value] of Object.entries(fields)) {
         const input = document.createElement("input");
         input.type = "hidden";
         input.name = key;
-        input.value = response.data[key];
+        input.value = value;
         form.appendChild(input);
-      });
+      }
 
       document.body.appendChild(form);
       form.submit();
     } catch (error) {
       console.error("Payment initiation failed:", error);
+      if (error.response?.status === 401) {
+        alert("Session expired. Please log in again.");
+      } else {
+        alert("Payment failed. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
