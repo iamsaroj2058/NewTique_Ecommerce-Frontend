@@ -30,37 +30,46 @@ const CheckOut = () => {
         address: values.billingAddress,
       };
 
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("authToken");
+
       const response = await axios.post(
         "http://localhost:8000/api/esewa/initiate/",
+
         payload,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Token ${token}`,
           },
         }
       );
+      console.log("Form action URL:", response.data.esewa_url);
 
-      // eSewa v2: Create and submit the payment form
       const form = document.createElement("form");
       form.method = "POST";
       form.action = response.data.esewa_url;
 
-      const fields = {
+      const esewaFields = {
+        total_amount: response.data.total_amount,
         amount: response.data.amount,
         tax_amount: response.data.tax_amount,
-        total_amount: response.data.total_amount,
-        transaction_uuid: response.data.transaction_uuid,
-        product_code: response.data.product_code,
         product_service_charge: response.data.product_service_charge,
         product_delivery_charge: response.data.product_delivery_charge,
+        transaction_uuid: response.data.transaction_uuid,
+        product_code: response.data.product_code,
+        merchant_code: response.data.product_code, 
         success_url: response.data.success_url,
         failure_url: response.data.failure_url,
         signed_field_names: response.data.signed_field_names,
         signature: response.data.signature,
       };
 
-      for (const [key, value] of Object.entries(fields)) {
+      for (const [key, value] of Object.entries(esewaFields)) {
+        if (value === undefined || value === null) {
+          console.error(`Missing field: ${key}`);
+          alert(`Missing required field: ${key}`);
+          return;
+        }
+
         const input = document.createElement("input");
         input.type = "hidden";
         input.name = key;
@@ -72,10 +81,20 @@ const CheckOut = () => {
       form.submit();
     } catch (error) {
       console.error("Payment initiation failed:", error);
-      if (error.response?.status === 401) {
-        alert("Session expired. Please log in again.");
+
+      if (error.response) {
+        console.error("Backend responded with:", error.response.data); // Log this!
+        alert(
+          `Error ${error.response.status}: ${JSON.stringify(
+            error.response.data
+          )}`
+        );
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+        alert("No response from server.");
       } else {
-        alert("Payment failed. Please try again.");
+        console.error("Error setting up request:", error.message);
+        alert("Error setting up the request.");
       }
     } finally {
       setLoading(false);
@@ -98,7 +117,6 @@ const CheckOut = () => {
           <h2 className="text-2xl font-semibold mb-6">Billing Information</h2>
 
           <Form layout="vertical" onFinish={onFinish}>
-            {/* Personal Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 label="Full Name"
@@ -123,7 +141,6 @@ const CheckOut = () => {
               </Form.Item>
             </div>
 
-            {/* Billing Address */}
             <Divider orientation="left">Shipping Address</Divider>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
@@ -146,7 +163,6 @@ const CheckOut = () => {
               </Form.Item>
             </div>
 
-            {/* Submit */}
             <Form.Item className="mt-6">
               <Button
                 type="primary"
