@@ -2,99 +2,93 @@ import React, { useState } from "react";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
-import { Input, Button, Form, Divider, Breadcrumb } from "antd";
+import { Input, Button, Form, Divider, Breadcrumb, Radio, message } from "antd";
 import axios from "axios";
 
 const CheckOut = () => {
   const [loading, setLoading] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("esewa");
 
   const onFinish = async (values) => {
     setLoading(true);
 
+    const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
+    const token = localStorage.getItem("authToken");
+
+    if (!buyNowItem || !token) {
+      alert("Missing product or authentication. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    const orderPayload = {
+      amount: buyNowItem.subtotal,
+      product_id: buyNowItem.id,
+      product_name: buyNowItem.name,
+      buyer_name: values.name,
+      email: values.email,
+      phone: values.phone,
+      address: values.billingAddress,
+      payment_method: paymentMethod,
+    };
+
     try {
-      const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
-      if (!buyNowItem) {
-        alert(
-          "No item found for purchase. Please go back and select a product."
+      if (paymentMethod === "cod") {
+        const response = await axios.post(
+          "http://localhost:8000/api/cash-on-delivery/",
+          orderPayload,
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
         );
-        return;
-      }
 
-      const payload = {
-        amount: buyNowItem.subtotal,
-        product_id: buyNowItem.id,
-        product_name: buyNowItem.name,
-        buyer_name: values.name,
-        email: values.email,
-        phone: values.phone,
-        address: values.billingAddress,
-      };
-
-      const token = localStorage.getItem("authToken");
-
-      const response = await axios.post(
-        "http://localhost:8000/api/esewa/initiate/",
-
-        payload,
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
-      );
-      console.log("Form action URL:", response.data.esewa_url);
-
-      const form = document.createElement("form");
-      form.method = "POST";
-      form.action = response.data.esewa_url;
-
-      const esewaFields = {
-        total_amount: response.data.total_amount,
-        amount: response.data.amount,
-        tax_amount: response.data.tax_amount,
-        product_service_charge: response.data.product_service_charge,
-        product_delivery_charge: response.data.product_delivery_charge,
-        transaction_uuid: response.data.transaction_uuid,
-        product_code: response.data.product_code,
-        merchant_code: response.data.product_code, 
-        success_url: response.data.success_url,
-        failure_url: response.data.failure_url,
-        signed_field_names: response.data.signed_field_names,
-        signature: response.data.signature,
-      };
-
-      for (const [key, value] of Object.entries(esewaFields)) {
-        if (value === undefined || value === null) {
-          console.error(`Missing field: ${key}`);
-          alert(`Missing required field: ${key}`);
-          return;
-        }
-
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value;
-        form.appendChild(input);
-      }
-
-      document.body.appendChild(form);
-      form.submit();
-    } catch (error) {
-      console.error("Payment initiation failed:", error);
-
-      if (error.response) {
-        console.error("Backend responded with:", error.response.data); // Log this!
-        alert(
-          `Error ${error.response.status}: ${JSON.stringify(
-            error.response.data
-          )}`
-        );
-      } else if (error.request) {
-        console.error("No response received:", error.request);
-        alert("No response from server.");
+        message.success("Order placed successfully with Cash on Delivery!");
+        window.location.href = "/";
       } else {
-        console.error("Error setting up request:", error.message);
-        alert("Error setting up the request.");
+        const response = await axios.post(
+          "http://localhost:8000/api/esewa/initiate/",
+          orderPayload,
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = response.data.esewa_url;
+
+        const esewaFields = {
+          total_amount: response.data.total_amount,
+          amount: response.data.amount,
+          tax_amount: response.data.tax_amount,
+          product_service_charge: response.data.product_service_charge,
+          product_delivery_charge: response.data.product_delivery_charge,
+          transaction_uuid: response.data.transaction_uuid,
+          product_code: response.data.product_code,
+          merchant_code: response.data.product_code,
+          success_url: response.data.success_url,
+          failure_url: response.data.failure_url,
+          signed_field_names: response.data.signed_field_names,
+          signature: response.data.signature,
+        };
+
+        for (const [key, value] of Object.entries(esewaFields)) {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = key;
+          input.value = value;
+          form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+      }
+    } catch (error) {
+      console.error("Order Error:", error);
+      if (error.response?.data) {
+        message.error(`Error: ${JSON.stringify(error.response.data)}`);
+      } else {
+        message.error("Something went wrong!");
       }
     } finally {
       setLoading(false);
@@ -161,6 +155,17 @@ const CheckOut = () => {
               <Form.Item label="Postal Code" name="billingZip">
                 <Input />
               </Form.Item>
+            </div>
+
+            <Divider orientation="left">Select Payment Method</Divider>
+            <div className="mb-6">
+              <Radio.Group
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                value={paymentMethod}
+              >
+                <Radio value="esewa">eSewa</Radio>
+                <Radio value="cod">Cash on Delivery</Radio>
+              </Radio.Group>
             </div>
 
             <Form.Item className="mt-6">
