@@ -13,6 +13,11 @@ const CheckOut = () => {
     setLoading(true);
 
     const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
+    if (!buyNowItem || typeof buyNowItem.subtotal !== "number" || buyNowItem.subtotal <= 0) {
+      alert("Something went wrong with the selected item.");
+      setLoading(false);
+      return;
+    }
     const token = localStorage.getItem("authToken");
 
     if (!buyNowItem || !token) {
@@ -28,7 +33,10 @@ const CheckOut = () => {
       buyer_name: values.name,
       email: values.email,
       phone: values.phone,
-      address: values.billingAddress,
+      address: values.address,
+      city: values.billingCity,
+      state: values.billingState,
+      zip_code: values.billingZip,
       payment_method: paymentMethod,
     };
 
@@ -139,7 +147,7 @@ const CheckOut = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 label="Street Address"
-                name="billingAddress"
+                name="address"
                 rules={[
                   { required: true, message: "Street address is required" },
                 ]}
