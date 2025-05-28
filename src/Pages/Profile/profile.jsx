@@ -281,10 +281,11 @@ const Profile = () => {
             {activeMenu === "orderHistory" && (
               <div>
                 <Table
-                  columns={columns}
                   dataSource={orderData}
+                  columns={columns}
                   pagination={false}
                 />
+
                 <Modal
                   title="Order Details"
                   open={isOrderModalVisible}
@@ -292,9 +293,10 @@ const Profile = () => {
                   footer={
                     <Button onClick={handleOrderModalCancel}>Close</Button>
                   }
+                  width={800}
                 >
                   {selectedOrder && (
-                    <div className="space-y-4">
+                    <>
                       <Descriptions bordered column={1}>
                         <Descriptions.Item label="Order ID">
                           {selectedOrder.orderId}
@@ -315,20 +317,59 @@ const Profile = () => {
                           {selectedOrder.paymentMethod}
                         </Descriptions.Item>
                       </Descriptions>
-                      <div>
-                        <h4 className="text-lg font-semibold mt-4 mb-2">
-                          Products:
-                        </h4>
-                        <ul className="list-disc pl-6">
-                          {selectedOrder.products.map((product, index) => (
-                            <li key={index}>
-                              {product.name} × {product.quantity} —{" "}
-                              {product.price}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+
+                      <h4 className="text-lg font-semibold mt-6 mb-2">
+                        Products
+                      </h4>
+                      <Table
+                        dataSource={selectedOrder.products.map(
+                          (product, index) => ({
+                            key: index,
+                            product: (
+                              <div className="flex items-center gap-3">
+                                <img
+                                  src={product.image}
+                                  alt={product.name}
+                                  className="h-12 w-12 object-cover"
+                                />
+                                <span>
+                                  {product.name} ({product.color}/{product.size}
+                                  )
+                                </span>
+                              </div>
+                            ),
+                            price: `Rs. ${product.price}`,
+                            quantity: product.quantity,
+                            subtotal: `Rs. ${product.price * product.quantity}`,
+                          })
+                        )}
+                        columns={[
+                          {
+                            title: "Product",
+                            dataIndex: "product",
+                            key: "product",
+                          },
+                          {
+                            title: "Price",
+                            dataIndex: "price",
+                            key: "price",
+                          },
+                          {
+                            title: "Quantity",
+                            dataIndex: "quantity",
+                            key: "quantity",
+                          },
+                          {
+                            title: "Subtotal",
+                            dataIndex: "subtotal",
+                            key: "subtotal",
+                          },
+                        ]}
+                        pagination={false}
+                        bordered
+                        className="mt-4"
+                      />
+                    </>
                   )}
                 </Modal>
               </div>
