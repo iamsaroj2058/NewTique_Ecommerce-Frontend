@@ -2,7 +2,16 @@ import React, { useEffect, useState } from "react";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
-import { Breadcrumb, Table, Button, Popconfirm, message } from "antd";
+import { Link } from "react-router-dom";
+
+import {
+  Breadcrumb,
+  Table,
+  Button,
+  Popconfirm,
+  message,
+  InputNumber,
+} from "antd";
 import { useNavigate } from "react-router-dom";
 
 const CartContex = () => {
@@ -16,13 +25,34 @@ const CartContex = () => {
   useEffect(() => {
     const loadCart = () => {
       const storedCart = JSON.parse(localStorage.getItem(cartKey)) || [];
-      setCartItems(storedCart);
+      const inStockItems = storedCart.filter((item) =>
+        typeof item.stock === "number" ? item.stock > 0 : true
+      );
+      setCartItems(inStockItems);
     };
 
     loadCart();
     window.addEventListener("storage", loadCart);
     return () => window.removeEventListener("storage", loadCart);
   }, [cartKey]);
+
+  // Update quantity
+  const handleQuantityChange = (value, index) => {
+    const updatedCart = [...cartItems];
+    const item = updatedCart[index];
+
+    // Prevent setting quantity beyond stock
+    if (value > item.stock) {
+      message.warning(`Only ${item.stock} in stock.`);
+      return;
+    }
+
+    item.quantity = value;
+    item.subtotal = value * item.price;
+
+    setCartItems(updatedCart);
+    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+  };
 
   // Delete item from cart
   const handleDelete = (index) => {
@@ -34,15 +64,62 @@ const CartContex = () => {
     message.success("Item removed from cart");
   };
 
-  // Proceed to checkout
-  const handleCheckout = () => {
+  // Group similar products to validate total quantity
+  const groupByKey = (items) => {
+    const map = new Map();
+
+    items.forEach((item) => {
+      const key = `${item.id}_${item.color}_${item.size}`;
+      const current = map.get(key) || { ...item, quantity: 0, subtotal: 0 };
+
+      current.quantity += Number(item.quantity);
+      current.subtotal += Number(item.subtotal);
+      map.set(key, current);
+    });
+
+    return Array.from(map.values());
+  };
+
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
-      message.warning("Your cart is empty.");
+      message.warning("🛒 Your cart is empty.");
       return;
     }
 
-    localStorage.setItem("checkoutItems", JSON.stringify(cartItems));
-    navigate("/checkout");
+    try {
+      const ids = cartItems.map((item) => item.id).join(","); // "1,2,3"
+      const res = await fetch(
+        `http://localhost:8000/api/products/stocks/?ids=${ids}`
+      );
+      const data = await res.json();
+      const stockMap = {};
+      data.forEach((product) => {
+        stockMap[product.id] = product.stock;
+      });
+
+      const invalidItems = cartItems.filter((item) => {
+        const latestStock = stockMap[item.id];
+        return item.quantity > latestStock;
+      });
+
+      if (invalidItems.length > 0) {
+        invalidItems.forEach((item) => {
+          const available = stockMap[item.id] || 0;
+          message.error(
+            `❌ ${item.name} (${item.color}/${item.size}): Requested ${item.quantity}, but only ${available} in stock.`
+          );
+        });
+        message.warning("⚠️ Please update your cart.");
+        return;
+      }
+
+      // ✅ All quantities are valid
+      localStorage.setItem("checkoutItems", JSON.stringify(cartItems));
+      navigate("/checkout");
+    } catch (error) {
+      console.error("Failed to validate stock:", error);
+      message.error("❌ Failed to check stock. Try again later.");
+    }
   };
 
   const columns = [
@@ -86,18 +163,35 @@ const CartContex = () => {
     key: index,
     product: (
       <div className="flex items-center gap-3">
-        <img src={item.image} alt={item.name} className="h-12 w-12" />
-        <span>
-          {item.name} ({item.color}/{item.size})
-        </span>
+        <Link
+          to={`/product-details/${item.id}`}
+          className="flex items-center gap-3"
+        >
+          <img src={item.image} alt={item.name} className="h-12 w-12" />
+          <span className="hover:underline text-blue-600">
+            {item.name}
+            {Number(item.quantity) > Number(item.stock) && (
+              <span className="text-red-500 ml-2">
+                (Only {item.stock} in stock)
+              </span>
+            )}
+          </span>
+        </Link>
       </div>
     ),
     price: `Rs. ${item.price}`,
-    quantity: item.quantity,
+    quantity: (
+      <InputNumber
+        min={1}
+        max={item.stock}
+        value={item.quantity}
+        onChange={(value) => handleQuantityChange(value, index)}
+      />
+    ),
     subtotal: `Rs. ${item.subtotal}`,
   }));
 
-  const total = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+  const total = cartItems.reduce((sum, item) => sum + Number(item.subtotal), 0);
 
   return (
     <div>

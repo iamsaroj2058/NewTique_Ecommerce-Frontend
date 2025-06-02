@@ -82,6 +82,7 @@ const ProductDetails = () => {
       price: product.price,
       quantity,
       subtotal: product.price * quantity,
+      stock: product.stock,
     };
 
     const user = JSON.parse(localStorage.getItem("user"));
