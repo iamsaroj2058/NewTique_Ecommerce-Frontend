@@ -37,6 +37,8 @@ const Profile = () => {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const navigate = useNavigate();
 
+  const [user, setUser] = useState(null);
+
   const showModal = () => setIsModalVisible(true);
   const handleCancel = () => setIsModalVisible(false);
   const handleOk = () => setIsModalVisible(false);
@@ -105,37 +107,42 @@ const Profile = () => {
     }
   };
 
-  const orderData = [
-    {
-      key: "1",
-      orderId: "12345",
-      date: "2025-04-20",
-      status: "Delivered",
-      total: "$120.00",
-      products: [
-        { name: "Product A", quantity: 1, price: "$60.00" },
-        { name: "Product B", quantity: 2, price: "$30.00" },
-      ],
-      address: "Kathmandu, Nepal",
-      paymentMethod: "Cash on Delivery",
-    },
-    {
-      key: "2",
-      orderId: "12346",
-      date: "2025-04-18",
-      status: "Pending",
-      total: "$85.00",
-      products: [{ name: "Product C", quantity: 1, price: "$85.00" }],
-      address: "Pokhara, Nepal",
-      paymentMethod: "Khalti",
-    },
-  ];
+  const [orderData, setOrderData] = useState([]);
 
   const columns = [
     {
-      title: "Order ID",
-      dataIndex: "orderId",
-      key: "orderId",
+      title: "Product",
+      dataIndex: "product",
+      key: "product",
+      render: (product) => (
+        <div className="flex items-center gap-3">
+          <img
+            src={product?.image}
+            alt={product?.name}
+            className="h-10 w-10 object-cover"
+          />
+          <span>
+            {product?.name} ({product?.color}/{product?.size})
+          </span>
+        </div>
+      ),
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+      render: (price) => `Rs. ${price}`,
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
+      title: "Subtotal",
+      dataIndex: "subtotal",
+      key: "subtotal",
+      render: (subtotal) => `Rs. ${subtotal}`,
     },
     {
       title: "Date",
@@ -147,22 +154,31 @@ const Profile = () => {
       dataIndex: "status",
       key: "status",
     },
-    {
-      title: "Total",
-      dataIndex: "total",
-      key: "total",
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_, record) => (
-        <Button type="link" onClick={() => showOrderDetails(record)}>
-          View Details
-        </Button>
-      ),
-    },
   ];
-  const [user, setUser] = useState(null);
+
+  const formattedOrders = orderData.map((order, index) => {
+    const firstProduct = order.products?.[0] || {};
+    const totalQuantity = order.products?.reduce(
+      (sum, p) => sum + Number(p.quantity),
+      0
+    );
+    const totalPrice = order.products?.reduce(
+      (sum, p) => sum + Number(p.price) * Number(p.quantity),
+      0
+    );
+
+    return {
+      key: index,
+      order, // 👈 include the whole order here
+      product: firstProduct,
+      price: firstProduct.price,
+      quantity: totalQuantity,
+      subtotal: totalPrice,
+      date: new Date(order.created_at).toLocaleString(),
+
+      status: order.status,
+    };
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -172,6 +188,25 @@ const Profile = () => {
       navigate("/login"); // Redirect if not logged in
     }
   }, []);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await axios.get("http://localhost:8000/api/orders/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+        setOrderData(response.data); // Set backend data to state
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      }
+    };
+
+    fetchOrders();
+  }, []);
+
   return (
     <>
       <Topheader />
@@ -281,9 +316,14 @@ const Profile = () => {
             {activeMenu === "orderHistory" && (
               <div>
                 <Table
-                  dataSource={orderData}
+                  dataSource={formattedOrders}
                   columns={columns}
                   pagination={false}
+                  onRow={(record) => {
+                    return {
+                      onClick: () => showOrderDetails(record.order), // 👈 send full order
+                    };
+                  }}
                 />
 
                 <Modal
@@ -297,26 +337,36 @@ const Profile = () => {
                 >
                   {selectedOrder && (
                     <>
-                      <Descriptions bordered column={1}>
-                        <Descriptions.Item label="Order ID">
-                          {selectedOrder.orderId}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Date">
-                          {selectedOrder.date}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Status">
-                          {selectedOrder.status}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Total">
-                          {selectedOrder.total}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Delivery Address">
-                          {selectedOrder.address}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Payment Method">
-                          {selectedOrder.paymentMethod}
-                        </Descriptions.Item>
-                      </Descriptions>
+                      <Descriptions.Item label="Order ID">
+                        {selectedOrder.id}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Customer Name">
+                        {selectedOrder.user?.name}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Email">
+                        {selectedOrder.user?.email}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Date">
+                        {new Date(selectedOrder.created_at).toLocaleString()}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Status">
+                        {selectedOrder.status}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Total Amount">
+                        Rs. {selectedOrder.total_amount}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Delivery Address">
+                        {selectedOrder.address}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Payment Method">
+                        {selectedOrder.payment_method}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Quantity">
+                        {selectedOrder.products.reduce(
+                          (sum, p) => sum + Number(p.quantity),
+                          0
+                        )}
+                      </Descriptions.Item>
 
                       <h4 className="text-lg font-semibold mt-6 mb-2">
                         Products
@@ -340,7 +390,9 @@ const Profile = () => {
                             ),
                             price: `Rs. ${product.price}`,
                             quantity: product.quantity,
-                            subtotal: `Rs. ${product.price * product.quantity}`,
+                            subtotal: `Rs. ${
+                              Number(product.price) * Number(product.quantity)
+                            }`,
                           })
                         )}
                         columns={[
