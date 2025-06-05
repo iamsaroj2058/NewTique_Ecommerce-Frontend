@@ -121,9 +121,7 @@ const Profile = () => {
             alt={product?.name}
             className="h-10 w-10 object-cover"
           />
-          <span>
-            {product?.name} ({product?.color}/{product?.size})
-          </span>
+          <span>{product?.name}</span>
         </div>
       ),
     },
@@ -132,6 +130,11 @@ const Profile = () => {
       dataIndex: "price",
       key: "price",
       render: (price) => `Rs. ${price}`,
+    },
+    {
+      title: "Payment Method",
+      dataIndex: "payment_method",
+      key: "payment_method",
     },
     {
       title: "Quantity",
@@ -144,6 +147,7 @@ const Profile = () => {
       key: "subtotal",
       render: (subtotal) => `Rs. ${subtotal}`,
     },
+
     {
       title: "Date",
       dataIndex: "date",
@@ -170,12 +174,15 @@ const Profile = () => {
     return {
       key: index,
       order, // 👈 include the whole order here
-      product: firstProduct,
-      price: firstProduct.price,
-      quantity: totalQuantity,
-      subtotal: totalPrice,
+      product: {
+        image: order.product_image,
+        name: order.product_name,
+      },
+      price: order.amount,
+      payment_method: order.payment_method,
+      quantity: order.quantity,
+      subtotal: order.total_price,
       date: new Date(order.created_at).toLocaleString(),
-
       status: order.status,
     };
   });
@@ -337,36 +344,38 @@ const Profile = () => {
                 >
                   {selectedOrder && (
                     <>
-                      <Descriptions.Item label="Order ID">
-                        {selectedOrder.id}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Customer Name">
-                        {selectedOrder.user?.name}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Email">
-                        {selectedOrder.user?.email}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Date">
-                        {new Date(selectedOrder.created_at).toLocaleString()}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Status">
-                        {selectedOrder.status}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Total Amount">
-                        Rs. {selectedOrder.total_amount}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Delivery Address">
-                        {selectedOrder.address}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Payment Method">
-                        {selectedOrder.payment_method}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Quantity">
-                        {selectedOrder.products.reduce(
-                          (sum, p) => sum + Number(p.quantity),
-                          0
-                        )}
-                      </Descriptions.Item>
+                      <Descriptions bordered column={1}>
+                        <Descriptions.Item label="Order ID">
+                          {selectedOrder.id}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Customer Name">
+                          {selectedOrder.user?.name}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Email">
+                          {selectedOrder.user?.email}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Date">
+                          {new Date(selectedOrder.created_at).toLocaleString()}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Status">
+                          {selectedOrder.status}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Total Amount">
+                          Rs. {selectedOrder.total_price}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Delivery Address">
+                          {selectedOrder.address}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Payment Method">
+                          {selectedOrder.payment_method}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Quantity">
+                          {selectedOrder.products?.reduce(
+                            (sum, p) => sum + Number(p.quantity),
+                            0
+                          )}
+                        </Descriptions.Item>
+                      </Descriptions>
 
                       <h4 className="text-lg font-semibold mt-6 mb-2">
                         Products
@@ -407,9 +416,9 @@ const Profile = () => {
                             key: "price",
                           },
                           {
-                            title: "Quantity",
-                            dataIndex: "quantity",
-                            key: "quantity",
+                            title: "Payment Method",
+                            dataIndex: "payment_method",
+                            key: "payment_method",
                           },
                           {
                             title: "Subtotal",

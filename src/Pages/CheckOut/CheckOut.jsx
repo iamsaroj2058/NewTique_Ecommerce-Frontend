@@ -13,12 +13,18 @@ const CheckOut = () => {
     setLoading(true);
 
     const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
-    if (!buyNowItem || typeof buyNowItem.subtotal !== "number" || buyNowItem.subtotal <= 0) {
+
+    if (
+      !buyNowItem ||
+      typeof buyNowItem.subtotal !== "number" ||
+      buyNowItem.subtotal <= 0
+    ) {
       alert("Something went wrong with the selected item.");
       setLoading(false);
       return;
     }
     const token = localStorage.getItem("authToken");
+    console.log("token", token);
 
     if (!buyNowItem || !token) {
       alert("Missing product or authentication. Please try again.");
@@ -38,8 +44,9 @@ const CheckOut = () => {
       state: values.billingState,
       zip_code: values.billingZip,
       payment_method: paymentMethod,
+      quantity: buyNowItem.quantity,
+      subtotal: buyNowItem.subtotal,
     };
-
     try {
       if (paymentMethod === "cod") {
         const response = await axios.post(
@@ -51,20 +58,8 @@ const CheckOut = () => {
         );
 
         message.success("Order placed successfully with Cash on Delivery!");
-        window.location.href = "/";
+        // window.location.href = "/";
       } else {
-        const response = await axios.post(
-          "http://localhost:8000/api/esewa/initiate/",
-          orderPayload,
-          {
-            headers: { Authorization: `Token ${token}` },
-          }
-        );
-
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = response.data.esewa_url;
-
         const esewaFields = {
           total_amount: response.data.total_amount,
           amount: response.data.amount,
@@ -79,6 +74,17 @@ const CheckOut = () => {
           signed_field_names: response.data.signed_field_names,
           signature: response.data.signature,
         };
+        const response = await axios.post(
+          "http://localhost:8000/api/esewa/initiate/",
+          esewaFields,
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = response.data.esewa_url;
 
         for (const [key, value] of Object.entries(esewaFields)) {
           const input = document.createElement("input");
