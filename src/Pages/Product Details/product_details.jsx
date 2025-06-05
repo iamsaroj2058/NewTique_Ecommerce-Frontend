@@ -231,7 +231,7 @@ const ProductDetails = () => {
             <p className="mt-4 text-2xl text-orange-500 font-bold">
               Rs. {product.price}
               <sub className="text-gray-500 line-through text-base ml-2">
-                Rs. 2100
+                Rs. 10
               </sub>
             </p>
 

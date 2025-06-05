@@ -33,7 +33,7 @@ const CheckOut = () => {
     }
 
     const orderPayload = {
-      amount: buyNowItem.subtotal,
+      amount: buyNowItem.price,
       product_id: buyNowItem.id,
       product_name: buyNowItem.name,
       buyer_name: values.name,
@@ -57,8 +57,9 @@ const CheckOut = () => {
           }
         );
 
-        message.success("Order placed successfully with Cash on Delivery!");
-        // window.location.href = "/";
+        alert("Order placed successfully with Cash on Delivery!");
+
+        window.location.href = "/";
       } else {
         const esewaFields = {
           total_amount: response.data.total_amount,
