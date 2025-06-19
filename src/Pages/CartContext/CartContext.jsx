@@ -159,7 +159,7 @@ const CartContex = () => {
     },
   ];
 
-  const dataSource = cartItems.map((item, index) => ({
+  const dataSource = cartItems?.map((item, index) => ({
     key: index,
     product: (
       <div className="flex items-center gap-3">
@@ -191,6 +191,7 @@ const CartContex = () => {
     subtotal: `Rs. ${item.subtotal}`,
   }));
 
+  // console.log(dataSource, "this is data");
   const total = cartItems.reduce((sum, item) => sum + Number(item.subtotal), 0);
 
   return (

@@ -4,88 +4,106 @@ import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
 import { Input, Button, Form, Divider, Breadcrumb, Radio, message } from "antd";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const CheckOut = () => {
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("esewa");
+  const navigate = useNavigate();
 
   const onFinish = async (values) => {
     setLoading(true);
 
+    // Check for buy now item first
     const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
+    const cartItems = JSON.parse(localStorage.getItem("checkoutItems")) || [];
 
-    if (
-      !buyNowItem ||
-      typeof buyNowItem.subtotal !== "number" ||
-      buyNowItem.subtotal <= 0
-    ) {
-      alert("Something went wrong with the selected item.");
+    let products = [];
+
+    if (buyNowItem) {
+      products = [
+        {
+          id: buyNowItem.id,
+          quantity: buyNowItem.quantity,
+        },
+      ];
+    } else {
+      products = cartItems.map((item) => ({
+        id: item.id,
+        quantity: item.quantity,
+      }));
+    }
+
+    if (products.length === 0) {
+      message.error("No items to checkout");
       setLoading(false);
       return;
     }
-    const token = localStorage.getItem("authToken");
-    console.log("token", token);
 
-    if (!buyNowItem || !token) {
-      alert("Missing product or authentication. Please try again.");
-      setLoading(false);
-      return;
-    }
-
-    const orderPayload = {
-      amount: buyNowItem.price,
-      product_id: buyNowItem.id,
-      product_name: buyNowItem.name,
-      buyer_name: values.name,
-      email: values.email,
-      phone: values.phone,
+    const orderData = {
       address: values.address,
       city: values.billingCity,
       state: values.billingState,
       zip_code: values.billingZip,
       payment_method: paymentMethod,
-      quantity: buyNowItem.quantity,
-      subtotal: buyNowItem.subtotal,
+      buyer_name: values.name,
+      email: values.email,
+      phone: values.phone,
+      products: products,
     };
+
     try {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        message.error("Authentication required");
+        return;
+      }
+
       if (paymentMethod === "cod") {
         const response = await axios.post(
           "http://localhost:8000/api/cash-on-delivery/",
-          orderPayload,
+          orderData,
           {
             headers: { Authorization: `Token ${token}` },
           }
         );
 
-        alert("Order placed successfully with Cash on Delivery!");
-
-        window.location.href = "/";
+        message.success("Order placed successfully!");
+        localStorage.removeItem("buyNowItem");
+        localStorage.removeItem("checkoutItems");
+        navigate("/");
       } else {
-        const esewaFields = {
-          total_amount: response.data.total_amount,
-          amount: response.data.amount,
-          tax_amount: response.data.tax_amount,
-          product_service_charge: response.data.product_service_charge,
-          product_delivery_charge: response.data.product_delivery_charge,
-          transaction_uuid: response.data.transaction_uuid,
-          product_code: response.data.product_code,
-          merchant_code: response.data.product_code,
-          success_url: response.data.success_url,
-          failure_url: response.data.failure_url,
-          signed_field_names: response.data.signed_field_names,
-          signature: response.data.signature,
-        };
-        const response = await axios.post(
+        // ESewa payment flow
+        const totalAmount = buyNowItem
+          ? buyNowItem.subtotal
+          : cartItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+        const esewaResponse = await axios.post(
           "http://localhost:8000/api/esewa/initiate/",
-          esewaFields,
+          { amount: totalAmount },
           {
             headers: { Authorization: `Token ${token}` },
           }
         );
+
+        const esewaFields = {
+          total_amount: esewaResponse.data.total_amount,
+          amount: esewaResponse.data.amount,
+          tax_amount: esewaResponse.data.tax_amount,
+          product_service_charge: esewaResponse.data.product_service_charge,
+          product_delivery_charge: esewaResponse.data.product_delivery_charge,
+          transaction_uuid: esewaResponse.data.transaction_uuid,
+          product_code: esewaResponse.data.product_code,
+          merchant_code: esewaResponse.data.product_code,
+          success_url: esewaResponse.data.success_url,
+          failure_url: esewaResponse.data.failure_url,
+          signed_field_names: esewaResponse.data.signed_field_names,
+          signature: esewaResponse.data.signature,
+        };
 
         const form = document.createElement("form");
         form.method = "POST";
-        form.action = response.data.esewa_url;
+        form.action = esewaResponse.data.esewa_url;
 
         for (const [key, value] of Object.entries(esewaFields)) {
           const input = document.createElement("input");
@@ -100,11 +118,7 @@ const CheckOut = () => {
       }
     } catch (error) {
       console.error("Order Error:", error);
-      if (error.response?.data) {
-        message.error(`Error: ${JSON.stringify(error.response.data)}`);
-      } else {
-        message.error("Something went wrong!");
-      }
+      message.error(error.response?.data?.error || "Failed to place order");
     } finally {
       setLoading(false);
     }

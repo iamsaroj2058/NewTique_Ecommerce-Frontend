@@ -119,13 +119,21 @@ const ProductDetails = () => {
       id: product.id,
       image: product.images?.[0] || product.image,
       name: product.name,
-      color: selectedColor,
-      size: selectedSize,
       price: product.price,
-      quantity,
+      quantity: quantity,
       subtotal: product.price * quantity,
+      stock: product.stock,
     };
+    // For buy now, we'll store it as a single-item cart
+    const checkoutItems = [
+      {
+        id: product.id,
+        quantity: quantity,
+      },
+    ];
+
     localStorage.setItem("buyNowItem", JSON.stringify(item));
+    localStorage.setItem("checkoutItems", JSON.stringify(checkoutItems));
     navigate("/checkout");
   };
 
