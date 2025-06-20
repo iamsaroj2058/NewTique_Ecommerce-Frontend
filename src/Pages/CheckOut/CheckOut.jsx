@@ -11,22 +11,25 @@ const CheckOut = () => {
   const [paymentMethod, setPaymentMethod] = useState("esewa");
   const navigate = useNavigate();
 
+  const clearAllCartData = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.email) {
+      localStorage.removeItem(`cart_${user.email}`);
+    }
+    localStorage.removeItem("checkoutItems");
+    localStorage.removeItem("buyNowItem");
+    window.dispatchEvent(new Event("storage"));
+  };
+
   const onFinish = async (values) => {
     setLoading(true);
 
-    // Check for buy now item first
     const buyNowItem = JSON.parse(localStorage.getItem("buyNowItem"));
     const cartItems = JSON.parse(localStorage.getItem("checkoutItems")) || [];
 
     let products = [];
-
     if (buyNowItem) {
-      products = [
-        {
-          id: buyNowItem.id,
-          quantity: buyNowItem.quantity,
-        },
-      ];
+      products = [{ id: buyNowItem.id, quantity: buyNowItem.quantity }];
     } else {
       products = cartItems.map((item) => ({
         id: item.id,
@@ -56,6 +59,7 @@ const CheckOut = () => {
       const token = localStorage.getItem("authToken");
       if (!token) {
         message.error("Authentication required");
+        setLoading(false); // Reset loading state
         return;
       }
 
@@ -63,17 +67,13 @@ const CheckOut = () => {
         const response = await axios.post(
           "http://localhost:8000/api/cash-on-delivery/",
           orderData,
-          {
-            headers: { Authorization: `Token ${token}` },
-          }
+          { headers: { Authorization: `Token ${token}` } }
         );
 
+        clearAllCartData();
         message.success("Order placed successfully!");
-        localStorage.removeItem("buyNowItem");
-        localStorage.removeItem("checkoutItems");
         navigate("/");
       } else {
-        // ESewa payment flow
         const totalAmount = buyNowItem
           ? buyNowItem.subtotal
           : cartItems.reduce((sum, item) => sum + item.subtotal, 0);
@@ -81,10 +81,15 @@ const CheckOut = () => {
         const esewaResponse = await axios.post(
           "http://localhost:8000/api/esewa/initiate/",
           { amount: totalAmount },
-          {
-            headers: { Authorization: `Token ${token}` },
-          }
+          { headers: { Authorization: `Token ${token}` } }
         );
+
+        // Clear cart only AFTER successful initiation
+        clearAllCartData();
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = esewaResponse.data.esewa_url;
 
         const esewaFields = {
           total_amount: esewaResponse.data.total_amount,
@@ -101,10 +106,6 @@ const CheckOut = () => {
           signature: esewaResponse.data.signature,
         };
 
-        const form = document.createElement("form");
-        form.method = "POST";
-        form.action = esewaResponse.data.esewa_url;
-
         for (const [key, value] of Object.entries(esewaFields)) {
           const input = document.createElement("input");
           input.type = "hidden";
@@ -119,6 +120,12 @@ const CheckOut = () => {
     } catch (error) {
       console.error("Order Error:", error);
       message.error(error.response?.data?.error || "Failed to place order");
+
+      // Restore cart for any payment failure
+      localStorage.setItem("checkoutItems", JSON.stringify(cartItems));
+      if (buyNowItem) {
+        localStorage.setItem("buyNowItem", JSON.stringify(buyNowItem));
+      }
     } finally {
       setLoading(false);
     }

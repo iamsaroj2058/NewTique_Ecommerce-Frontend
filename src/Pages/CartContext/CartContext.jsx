@@ -3,7 +3,6 @@ import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
 import { Link } from "react-router-dom";
-
 import {
   Breadcrumb,
   Table,
@@ -41,7 +40,6 @@ const CartContex = () => {
     const updatedCart = [...cartItems];
     const item = updatedCart[index];
 
-    // Prevent setting quantity beyond stock
     if (value > item.stock) {
       message.warning(`Only ${item.stock} in stock.`);
       return;
@@ -60,24 +58,8 @@ const CartContex = () => {
     updatedCart.splice(index, 1);
     setCartItems(updatedCart);
     localStorage.setItem(cartKey, JSON.stringify(updatedCart));
-    window.dispatchEvent(new Event("storage")); // notify others
+    window.dispatchEvent(new Event("storage"));
     message.success("Item removed from cart");
-  };
-
-  // Group similar products to validate total quantity
-  const groupByKey = (items) => {
-    const map = new Map();
-
-    items.forEach((item) => {
-      const key = `${item.id}_${item.color}_${item.size}`;
-      const current = map.get(key) || { ...item, quantity: 0, subtotal: 0 };
-
-      current.quantity += Number(item.quantity);
-      current.subtotal += Number(item.subtotal);
-      map.set(key, current);
-    });
-
-    return Array.from(map.values());
   };
 
   const handleCheckout = async () => {
@@ -87,7 +69,7 @@ const CartContex = () => {
     }
 
     try {
-      const ids = cartItems.map((item) => item.id).join(","); // "1,2,3"
+      const ids = cartItems.map((item) => item.id).join(",");
       const res = await fetch(
         `http://localhost:8000/api/products/stocks/?ids=${ids}`
       );
@@ -113,7 +95,7 @@ const CartContex = () => {
         return;
       }
 
-      // ✅ All quantities are valid
+      // Only set checkout items, cart will be cleared after successful payment
       localStorage.setItem("checkoutItems", JSON.stringify(cartItems));
       navigate("/checkout");
     } catch (error) {
