@@ -13,7 +13,15 @@ const FlashSale = () => {
   useEffect(() => {
     axios
       .get("http://127.0.0.1:8000/store/products/")
-      .then((res) => setProducts(res.data))
+      .then((res) => {
+        // Map the response data to include average_rating and reviews_count
+        const productsWithReviews = res.data.map((product) => ({
+          ...product,
+          average_rating: product.average_rating || 0,
+          reviews_count: product.reviews_count || 0,
+        }));
+        setProducts(productsWithReviews);
+      })
       .catch((err) => console.error("Error fetching products:", err));
   }, []);
 
@@ -48,12 +56,12 @@ const FlashSale = () => {
           <div key={item.id} className="w-full">
             <CardFirst
               key={item.id}
-              id={item.id} // 👈 Pass the product ID to navigate
+              id={item.id}
               productName={item.name}
               price={item.price}
               productImage={item.image}
-              rating={item.rating || 4.5}
-              totalRatings={item.totalRatings || 100}
+              average_rating={item.average_rating} // Use average_rating from API
+              reviews_count={item.reviews_count} // Use reviews_count from API
             />
           </div>
         ))}
