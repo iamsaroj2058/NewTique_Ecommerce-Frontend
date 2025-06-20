@@ -111,81 +111,74 @@ const Profile = () => {
 
   const columns = [
     {
-      title: "Product",
+      title: "Order ID",
+      dataIndex: "order",
+      key: "id",
+      render: (order) => `#${order.id}`,
+    },
+    {
+      title: "Products",
       dataIndex: "product",
-      key: "product",
+      key: "products",
       render: (product) => (
-        <div className="flex items-center gap-3">
-          <img
-            src={product?.image}
-            alt={product?.name}
-            className="h-10 w-10 object-cover"
-          />
-          <span>{product?.name}</span>
+        <div className="flex items-center gap-2">
+          <img src={product.image} className="h-8 w-8 rounded" />
+          <span>{product.name}</span>
         </div>
       ),
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price",
-      render: (price) => `Rs. ${price}`,
-    },
-    {
-      title: "Payment Method",
-      dataIndex: "payment_method",
-      key: "payment_method",
-    },
-    {
-      title: "Quantity",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title: "Subtotal",
+      title: "Total",
       dataIndex: "subtotal",
-      key: "subtotal",
       render: (subtotal) => `Rs. ${subtotal}`,
     },
-
     {
       title: "Date",
       dataIndex: "date",
-      key: "date",
     },
     {
       title: "Status",
       dataIndex: "status",
-      key: "status",
+      render: (status) => (
+        <span
+          className={`capitalize ${
+            status === "completed"
+              ? "text-green-500"
+              : status === "cancelled"
+              ? "text-red-500"
+              : "text-amber-500"
+          }`}
+        >
+          {status}
+        </span>
+      ),
+    },
+    {
+      title: "Action",
+      render: (_, record) => (
+        <Button size="small" onClick={() => showOrderDetails(record.order)}>
+          Details
+        </Button>
+      ),
     },
   ];
 
-  const formattedOrders = orderData.map((order, index) => {
-    const firstProduct = order.products?.[0] || {};
-    const totalQuantity = order.products?.reduce(
-      (sum, p) => sum + Number(p.quantity),
-      0
-    );
-    const totalPrice = order.products?.reduce(
-      (sum, p) => sum + Number(p.price) * Number(p.quantity),
-      0
-    );
-
-    return {
-      key: index,
-      order, // 👈 include the whole order here
-      product: {
-        image: order.product_image,
-        name: order.product_name,
-      },
-      price: order.amount,
-      payment_method: order.payment_method,
-      quantity: order.quantity,
-      subtotal: order.total_price,
-      date: new Date(order.created_at).toLocaleString(),
-      status: order.status,
-    };
-  });
+  const formattedOrders = orderData.map((order) => ({
+    key: order.id, // Use order ID as key
+    order, // Preserve full order data
+    product: {
+      image: order.items?.[0]?.product_image || "", // ✅ From first item
+      name:
+        order.items?.length > 1
+          ? `${order.items[0].product_name} + ${order.items.length - 1} more`
+          : order.items?.[0]?.product_name || "N/A",
+    },
+    payment_method: order.payment_method,
+    quantity: order.items?.reduce((sum, item) => sum + item.quantity, 0), // ✅ Sum all items
+    subtotal: order.total_price,
+    date: new Date(order.created_at).toLocaleString(),
+    status: order.status,
+  }));
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -323,18 +316,16 @@ const Profile = () => {
             {activeMenu === "orderHistory" && (
               <div>
                 <Table
-                  dataSource={formattedOrders}
+                  dataSource={formattedOrders} // ✅ Use formattedOrders here
                   columns={columns}
-                  pagination={false}
-                  onRow={(record) => {
-                    return {
-                      onClick: () => showOrderDetails(record.order), // 👈 send full order
-                    };
-                  }}
+                  loading={orderData.length === 0} // Basic loading state
+                  onRow={(record) => ({
+                    onClick: () => showOrderDetails(record.order),
+                  })}
                 />
 
                 <Modal
-                  title="Order Details"
+                  title={`Order #${selectedOrder?.id}`}
                   open={isOrderModalVisible}
                   onCancel={handleOrderModalCancel}
                   footer={
@@ -348,17 +339,21 @@ const Profile = () => {
                         <Descriptions.Item label="Order ID">
                           {selectedOrder.id}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Customer Name">
-                          {selectedOrder.user?.name}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Email">
-                          {selectedOrder.user?.email}
-                        </Descriptions.Item>
                         <Descriptions.Item label="Date">
                           {new Date(selectedOrder.created_at).toLocaleString()}
                         </Descriptions.Item>
                         <Descriptions.Item label="Status">
-                          {selectedOrder.status}
+                          <span
+                            className={`capitalize ${
+                              selectedOrder.status === "completed"
+                                ? "text-green-500"
+                                : selectedOrder.status === "cancelled"
+                                ? "text-red-500"
+                                : "text-amber-500"
+                            }`}
+                          >
+                            {selectedOrder.status}
+                          </span>
                         </Descriptions.Item>
                         <Descriptions.Item label="Total Amount">
                           Rs. {selectedOrder.total_price}
@@ -369,56 +364,40 @@ const Profile = () => {
                         <Descriptions.Item label="Payment Method">
                           {selectedOrder.payment_method}
                         </Descriptions.Item>
-                        <Descriptions.Item label="Quantity">
-                          {selectedOrder.products?.reduce(
-                            (sum, p) => sum + Number(p.quantity),
-                            0
-                          )}
-                        </Descriptions.Item>
                       </Descriptions>
 
                       <h4 className="text-lg font-semibold mt-6 mb-2">
                         Products
                       </h4>
                       <Table
-                        dataSource={selectedOrder.products.map(
-                          (product, index) => ({
-                            key: index,
-                            product: (
-                              <div className="flex items-center gap-3">
-                                <img
-                                  src={product.image}
-                                  alt={product.name}
-                                  className="h-12 w-12 object-cover"
-                                />
-                                <span>
-                                  {product.name} ({product.color}/{product.size}
-                                  )
-                                </span>
-                              </div>
-                            ),
-                            price: `Rs. ${product.price}`,
-                            quantity: product.quantity,
-                            subtotal: `Rs. ${
-                              Number(product.price) * Number(product.quantity)
-                            }`,
-                          })
-                        )}
+                        dataSource={selectedOrder.items?.map((item) => ({
+                          // ✅ Use items
+                          key: item.id,
+                          product: (
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={item.product_image}
+                                alt={item.product_name}
+                                className="h-12 w-12 object-cover"
+                              />
+                              <span>{item.product_name}</span>
+                            </div>
+                          ),
+                          price: `Rs. ${item.price}`,
+                          quantity: item.quantity,
+                          subtotal: `Rs. ${item.price * item.quantity}`,
+                        }))}
                         columns={[
                           {
                             title: "Product",
                             dataIndex: "product",
                             key: "product",
                           },
+                          { title: "Price", dataIndex: "price", key: "price" },
                           {
-                            title: "Price",
-                            dataIndex: "price",
-                            key: "price",
-                          },
-                          {
-                            title: "Payment Method",
-                            dataIndex: "payment_method",
-                            key: "payment_method",
+                            title: "Quantity",
+                            dataIndex: "quantity",
+                            key: "quantity",
                           },
                           {
                             title: "Subtotal",
@@ -428,7 +407,6 @@ const Profile = () => {
                         ]}
                         pagination={false}
                         bordered
-                        className="mt-4"
                       />
                     </>
                   )}
