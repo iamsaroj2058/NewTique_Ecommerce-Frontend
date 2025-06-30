@@ -28,6 +28,7 @@ const App = () => {
         {/* Product Routes */}
         <Route path="/product-details/:id" element={<Product_details />} />
 
+
         {/* Cart & Checkout */}
         <Route path="/cartcontex" element={<CartContex />} />
         <Route path="/checkout" element={<CheckOut />} />

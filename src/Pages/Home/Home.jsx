@@ -7,6 +7,7 @@ import Footer from "../../Section/Footer/footer";
 import Upper from "../../Section/Upper Footer/upper";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
+import RecommendationsSection from "../../Section/Recommendations/Recommendations";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -81,6 +82,11 @@ const Home = () => {
         </Row>
 
         {/* Optional sections */}
+          <RecommendationsSection 
+          title="Recommended For You" 
+          algorithm="hybrid" 
+          itemCount={6} 
+        />
         <FlashSale />
         <Enhance />
         <NewArrival />
