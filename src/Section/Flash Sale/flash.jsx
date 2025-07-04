@@ -1,31 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import FlashSalesHeader from "./flashSaleHeader";
 import { CardFirst } from "../../Components/Card/cardFirst";
-import { Button } from "antd";
+import { Button, Spin } from "antd";
 import axios from "axios";
 
+// Format time function
+const formatTime = (seconds) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h}h ${m}m ${s}s`;
+};
+
 const FlashSale = () => {
-  const [timeLeft, setTimeLeft] = useState(2 * 60 * 60); // Countdown timer
+  const [timeLeft, setTimeLeft] = useState(2 * 60 * 60); // 2 hours
   const [products, setProducts] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch products from Django store app
+  // Fetch products once
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/store/products/")
-      .then((res) => {
-        // Map the response data to include average_rating and reviews_count
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://127.0.0.1:8000/store/products/");
         const productsWithReviews = res.data.map((product) => ({
           ...product,
           average_rating: product.average_rating || 0,
           reviews_count: product.reviews_count || 0,
         }));
         setProducts(productsWithReviews);
-      })
-      .catch((err) => console.error("Error fetching products:", err));
+      } catch (err) {
+        console.error("Error fetching products:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
-  // Countdown timer logic
+  // Log only once after products are fetched
+  useEffect(() => {
+    if (products.length > 0) {
+      console.log("✅ Products fetched:", products);
+    }
+  }, [products]);
+
+  // Countdown timer
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
@@ -33,14 +54,20 @@ const FlashSale = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const toggleShowAll = () => setShowAll(!showAll);
+  const toggleShowAll = () => setShowAll((prev) => !prev);
 
-  const formatTime = (seconds) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h}h ${m}m ${s}s`;
-  };
+  const displayedProducts = useMemo(
+    () => (showAll ? products : products.slice(0, 5)),
+    [products, showAll]
+  );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-60">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full px-4 py-10">
@@ -52,26 +79,27 @@ const FlashSale = () => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {products.slice(0, showAll ? products.length : 5).map((item) => (
+        {displayedProducts.map((item) => (
           <div key={item.id} className="w-full">
             <CardFirst
-              key={item.id}
               id={item.id}
               productName={item.name}
               price={item.price}
               productImage={item.image}
-              average_rating={item.average_rating} // Use average_rating from API
-              reviews_count={item.reviews_count} // Use reviews_count from API
+              average_rating={item.average_rating}
+              reviews_count={item.reviews_count}
             />
           </div>
         ))}
       </div>
 
-      <div className="flex justify-center mt-10">
-        <Button type="primary" onClick={toggleShowAll}>
-          {showAll ? "Show Less" : "View More Products"}
-        </Button>
-      </div>
+      {products.length > 5 && (
+        <div className="flex justify-center mt-10">
+          <Button type="primary" onClick={toggleShowAll}>
+            {showAll ? "Show Less" : "View More Products"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

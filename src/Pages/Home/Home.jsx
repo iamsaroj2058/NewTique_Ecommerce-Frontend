@@ -29,7 +29,7 @@ const Home = () => {
     axios
       .get("http://127.0.0.1:8000/store/products/")
       .then((res) => {
-        setProducts(res.data);
+        // setProducts(res.data);
 
         // Extract unique category names
         const categoryNames = [
@@ -82,10 +82,10 @@ const Home = () => {
         </Row>
 
         {/* Optional sections */}
-          <RecommendationsSection 
-          title="Recommended For You" 
-          algorithm="hybrid" 
-          itemCount={6} 
+        <RecommendationsSection
+          title="Recommended For You"
+          algorithm="hybrid"
+          itemCount={6}
         />
         <FlashSale />
         <Enhance />

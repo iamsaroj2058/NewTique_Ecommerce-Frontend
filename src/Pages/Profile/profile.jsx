@@ -38,7 +38,6 @@ const Profile = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
-
   const showModal = () => setIsModalVisible(true);
   const handleCancel = () => setIsModalVisible(false);
   const handleOk = () => setIsModalVisible(false);
@@ -162,7 +161,6 @@ const Profile = () => {
       ),
     },
   ];
-
   const formattedOrders = orderData.map((order) => ({
     key: order.id, // Use order ID as key
     order, // Preserve full order data
@@ -180,14 +178,32 @@ const Profile = () => {
     status: order.status,
   }));
 
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   } else {
+  //     navigate("/login"); // Redirect if not logged in
+  //   }
+  // }, []);
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+
+      // Start timer to remove user after 1 minute
+      const timeout = setTimeout(() => {
+        localStorage.removeItem("user");
+      }, 3600000);
+
+      // Clean up the timeout on unmount
+      return () => clearTimeout(timeout);
     } else {
-      navigate("/login"); // Redirect if not logged in
+      navigate("/login"); // Redirect if user is not logged in
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const fetchOrders = async () => {

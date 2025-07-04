@@ -15,35 +15,51 @@ const Recommendations = ({
   const navigate = useNavigate();
 
   useEffect(() => {
+    let isMounted = true; // safeguard to prevent setting state on unmounted component
+
     const fetchRecommendations = async () => {
       try {
         setIsLoading(true);
-        const response = await axios.get("http://127.0.0.1:8000/api/recommendations/", {
-          params: {
-            n: 20,
-            algorithm,
-          },
-        });
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/recommendations/",
+          {
+            params: {
+              n: 20,
+              algorithm,
+            },
+          }
+        );
 
-        const recommendationsWithRatings = response.data.recommendations.map((item) => ({
-          ...item,
-          average_rating: item.average_rating || 0,
-          reviews_count: item.reviews_count || 0,
-          image: item.image && item.image !== "null" ? item.image : null,
-        }));
+        const recommendationsWithRatings = response.data.recommendations.map(
+          (item) => ({
+            ...item,
+            average_rating: item.average_rating || 0,
+            reviews_count: item.reviews_count || 0,
+            image: item.image && item.image !== "null" ? item.image : null,
+          })
+        );
 
-        setRecommendations(recommendationsWithRatings);
+        if (isMounted) {
+          setRecommendations(recommendationsWithRatings);
+        }
       } catch (error) {
         console.error("Recommendations error:", error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
 
     fetchRecommendations();
-  }, [algorithm]);
 
-  const toggleShowAll = () => setShowAll(!showAll);
+    return () => {
+      isMounted = false; // clean up on unmount
+    };
+  }, []); // dependency ensures it runs only when `algorithm` changes
+  // console.log("RECEIVED IMAGE:", item.image);
+
+  const toggleShowAll = useCallback(() => {
+    setShowAll((prev) => !prev);
+  }, []);
 
   const handleProductClick = useCallback(
     (productId) => {
@@ -62,21 +78,24 @@ const Recommendations = ({
   const recommendationCards = useMemo(() => {
     return recommendations
       .slice(0, showAll ? recommendations.length : initialCount)
-      .map((item) => (
-        <div key={item.id} className="w-full">
-          <CardFirst
-            id={item.id}
-            productName={item.name}
-            price={item.price}
-            productImage={item.image}
-            average_rating={item.average_rating}
-            reviews_count={item.reviews_count}
-            onClick={() => handleProductClick(item.id)}
-          />
-        </div>
-      ));
+      .map((item) => {
+        console.log("item?.image", item?.image);
+        return (
+          <div key={item.id} className="w-full">
+            <CardFirst
+              id={item?.id}
+              productName={item?.name}
+              price={item?.price}
+              productImage={item?.image}
+              average_rating={item?.average_rating}
+              reviews_count={item?.reviews_count}
+              onClick={() => handleProductClick(item.id)}
+            />
+          </div>
+        );
+      });
   }, [recommendations, showAll, initialCount, handleProductClick]);
-
+  console.log(recommendationCards);
   return (
     <div className="w-full px-4 py-10">
       <div className="flex justify-between items-center mb-8">

@@ -19,10 +19,10 @@ const ShopNow = () => {
       .get("http://127.0.0.1:8000/store/products/")
       .then((res) => {
         // Map the response data to include average_rating and reviews_count
-        const productsWithReviews = res.data.map(product => ({
+        const productsWithReviews = res.data.map((product) => ({
           ...product,
           average_rating: product.average_rating || 0,
-          reviews_count: product.reviews_count || 0
+          reviews_count: product.reviews_count || 0,
         }));
         setProducts(productsWithReviews);
       })
@@ -38,7 +38,7 @@ const ShopNow = () => {
     <div>
       <Topheader />
       <Header />
-      <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px] min-h-screen">
+      <div className="mx-auto px-10 py-6 ml-[60px] mr-[60px] h-auto">
         {query && (
           <h2 className="text-xl font-semibold mb-4">
             Search Results for: <span className="text-blue-600">{query}</span>
@@ -54,8 +54,8 @@ const ShopNow = () => {
                   productName={item.name}
                   price={item.price}
                   productImage={item.image}
-                  average_rating={item.average_rating}  // Use average_rating from API
-                  reviews_count={item.reviews_count}    // Use reviews_count from API
+                  average_rating={item.average_rating} // Use average_rating from API
+                  reviews_count={item.reviews_count} // Use reviews_count from API
                 />
               </div>
             ))}
