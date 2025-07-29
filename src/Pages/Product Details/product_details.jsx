@@ -115,46 +115,38 @@ const ProductDetails = () => {
   };
 
   // Cart handlers
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!isUserLoggedIn()) {
       setIsLoginPromptVisible(true);
       return;
     }
 
-    const cartItem = {
-      id: product.id,
-      image: product.images?.[0] || product.image,
-      name: product.name,
-      color: selectedColor,
-      size: selectedSize,
-      price: product.price,
-      quantity,
-      subtotal: product.price * quantity,
-      stock: product.stock,
-    };
+    const token = localStorage.getItem("authToken");
 
-    const user = JSON.parse(localStorage.getItem("user"));
-    const cartKey = `cart_${user.email}`;
-    const existingCart = JSON.parse(localStorage.getItem(cartKey)) || [];
-    const existingIndex = existingCart.findIndex(
-      (item) =>
-        item.id === cartItem.id &&
-        item.color === cartItem.color &&
-        item.size === cartItem.size
-    );
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:8000/store/cart/add/",
+        {
+          product_id: product.id,
+          quantity,
+          price: product.price,
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
 
-    if (existingIndex >= 0) {
-      existingCart[existingIndex].quantity += quantity;
-      existingCart[existingIndex].subtotal =
-        existingCart[existingIndex].quantity *
-        existingCart[existingIndex].price;
-    } else {
-      existingCart.push(cartItem);
+      message.success("✅ Item added to your cart.");
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+      if (error.response?.data?.error) {
+        message.error(`❌ ${error.response.data.error}`);
+      } else {
+        message.error("❌ Failed to add item to cart. Please try again.");
+      }
     }
-
-    localStorage.setItem(cartKey, JSON.stringify(existingCart));
-    window.dispatchEvent(new Event("storage"));
-    message.success("Item added to cart!");
   };
 
   const handleBuyNow = () => {
