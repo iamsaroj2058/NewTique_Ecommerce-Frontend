@@ -111,7 +111,6 @@ const SignUp = () => {
             />
           </Form.Item>
 
-          {/* Email Field */}
           <Form.Item
             label="Email"
             name="email"
@@ -121,8 +120,8 @@ const SignUp = () => {
                 message: "Please enter your email",
               },
               {
-                type: "email",
-                message: "Please enter a valid email address",
+                pattern: /^[a-zA-Z][\w.-]*@[a-zA-Z\d.-]+\.(com)$/,
+                message: "Email must start with a letter and end with '.com'",
               },
             ]}
           >
@@ -157,7 +156,6 @@ const SignUp = () => {
             </Space.Compact>
           </Form.Item>
 
-          {/* Password Field */}
           <Form.Item
             label="Password"
             name="password"
@@ -167,8 +165,10 @@ const SignUp = () => {
                 message: "Please enter your password",
               },
               {
-                min: 6,
-                message: "Password must be at least 6 characters",
+                pattern:
+                  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+                message:
+                  "Password must be at least 8 characters and include uppercase, lowercase, number, and special character",
               },
             ]}
           >
