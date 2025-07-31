@@ -32,7 +32,7 @@ const CheckOut = () => {
       products = [{ id: buyNowItem.id, quantity: buyNowItem.quantity }];
     } else {
       products = cartItems.map((item) => ({
-        id: item.id,
+        id: item.productId,
         quantity: item.quantity,
       }));
     }

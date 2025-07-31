@@ -38,7 +38,7 @@ const CartContex = () => {
 
         // Map cart items and fix image URL if needed
         const items = data.items.map((item) => ({
-          id: item.id,
+          id: item.productId,
           productId: item.product,
           name: item.product_name,
           image: item.product_image.startsWith("http")
@@ -109,7 +109,7 @@ const CartContex = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8000/api/cart/remove/?item_id=${item.id}`,
+        `http://localhost:8000/api/cart/remove/?item_id=${item.productId}`,
         {
           method: "DELETE",
           headers: {
@@ -273,6 +273,8 @@ const CartContex = () => {
         </div>
       </div>
       <Footer />
+
+      
     </div>
   );
 };
