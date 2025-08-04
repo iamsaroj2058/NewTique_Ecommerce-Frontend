@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Menu, Typography, Input, Badge, Button } from "antd";
-import {
-  ShoppingCartOutlined,
-  LoginOutlined,
-  UserAddOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
+import { ShoppingCartOutlined, UserOutlined } from "@ant-design/icons";
+import axios from "axios"; // ✅ Import axios here
 
 const { Text } = Typography;
 const { Search } = Input;
@@ -21,11 +17,28 @@ const Header = () => {
       navigate(`/shop-now?query=${encodeURIComponent(value.trim())}`);
     }
   };
-  const updateCartCount = () => {
+
+  const updateCartCount = async () => {
     const currentUser = JSON.parse(localStorage.getItem("user"));
-    const cartKey = `cart_${currentUser?.email}`;
-    const cartItems = JSON.parse(localStorage.getItem(cartKey)) || [];
-    setCartCount(cartItems.length);
+    if (!currentUser) {
+      setCartCount(0);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.get("http://localhost:8000/api/cart/", {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      });
+
+      const items = response.data.items || [];
+      setCartCount(items.length); // total cart items
+    } catch (error) {
+      console.error("Failed to fetch cart count:", error);
+      setCartCount(0);
+    }
   };
 
   useEffect(() => {
@@ -76,21 +89,6 @@ const Header = () => {
         </Link>
       ),
     },
-    // 👇 Only show Sign Up if not logged in
-    // ...(!user
-    //   ? [
-    //       {
-    //         key: "signup",
-    //         label: (
-    //           <Link to="/signup">
-    //             <Text strong className="text-base md:text-lg">
-    //               Sign Up
-    //             </Text>
-    //           </Link>
-    //         ),
-    //       },
-    //     ]
-    //   : []),
   ];
 
   return (
@@ -118,7 +116,6 @@ const Header = () => {
                 className="w-3xs"
               />
 
-              {/* ✅ Right-side Icons */}
               <div className="flex items-center gap-4">
                 {user ? (
                   <>
