@@ -60,6 +60,7 @@ const CartContex = () => {
     fetchCart();
   }, []);
 
+  // Update quantity of cart item
   const handleQuantityChange = async (value, index) => {
     if (value < 1) return; // Prevent less than 1 quantity
 
@@ -127,7 +128,7 @@ const CartContex = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8000/api/cart/remove/?item_id=${item.id}`, // ✅ cart item id here - correct
+        `${BACKEND_URL}/api/cart/remove/?item_id=${item.id}`, // <-- fixed here, using cart item id
         {
           method: "DELETE",
           headers: {
