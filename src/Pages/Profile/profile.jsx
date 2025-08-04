@@ -47,6 +47,50 @@ const Profile = () => {
     setIsOrderModalVisible(true);
   };
 
+  const [form] = Form.useForm();
+
+  const handleProfileUpdate = async (values) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await axios.put(
+        "http://localhost:8000/api/user-profile/",
+        {
+          full_name: values.name,
+          email: values.email,
+          phone: values.phone,
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+
+      // Update user state with returned data or with values sent
+      setUser({
+        name: response.data.full_name || values.name,
+        email: response.data.email || values.email,
+        phone: response.data.phone || values.phone,
+      });
+
+      // Optionally update localStorage
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: response.data.full_name || values.name,
+          email: response.data.email || values.email,
+          phone: response.data.phone || values.phone,
+        })
+      );
+
+      alert("Profile updated successfully!");
+      setIsModalVisible(false);
+    } catch (error) {
+      alert("Failed to update profile.");
+      console.error(error);
+    }
+  };
+
   const handleOrderModalCancel = () => setIsOrderModalVisible(false);
 
   const showLogoutModal = () => {
@@ -188,21 +232,29 @@ const Profile = () => {
   // }, []);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-
-      // Start timer to remove user after 1 minute
-      const timeout = setTimeout(() => {
-        localStorage.removeItem("user");
-      }, 3600000);
-
-      // Clean up the timeout on unmount
-      return () => clearTimeout(timeout);
-    } else {
-      navigate("/login"); // Redirect if user is not logged in
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/login");
+      return;
     }
+
+    axios
+      .get("http://localhost:8000/api/user-profile/", {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+      .then((res) => {
+        setUser({
+          name: res.data.full_name,
+          email: res.data.email,
+          phone: res.data.phone,
+        });
+      })
+      .catch(() => {
+        localStorage.removeItem("authToken");
+        navigate("/login");
+      });
   }, [navigate]);
 
   useEffect(() => {
@@ -281,10 +333,19 @@ const Profile = () => {
                 <Modal
                   title="Edit Profile"
                   open={isModalVisible}
-                  onOk={handleOk}
+                  onOk={() => form.submit()}
                   onCancel={handleCancel}
                 >
-                  <Form layout="vertical">
+                  <Form
+                    layout="vertical"
+                    form={form}
+                    initialValues={{
+                      name: user?.name,
+                      email: user?.email,
+                      phone: user?.phone,
+                    }}
+                    onFinish={handleProfileUpdate}
+                  >
                     <Form.Item
                       label="Name"
                       name="name"
@@ -316,13 +377,13 @@ const Profile = () => {
                           message: "Please enter your phone number",
                         },
                         {
-                          pattern: /^[0-9]{10}$/,
+                          pattern: /^\+?[0-9]{7,15}$/,
                           message:
-                            "Please enter a valid phone number (10 digits)",
+                            "Please enter a valid phone number with country code",
                         },
                       ]}
                     >
-                      <Input placeholder="Enter your phone number" />
+                      <Input placeholder="Enter your phone number, e.g. +9779812345678" />
                     </Form.Item>
                   </Form>
                 </Modal>
