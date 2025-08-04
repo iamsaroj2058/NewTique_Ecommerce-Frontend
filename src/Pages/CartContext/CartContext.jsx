@@ -38,8 +38,8 @@ const CartContex = () => {
 
         // Map cart items and fix image URL if needed
         const items = data.items.map((item) => ({
-          id: item.productId,
-          productId: item.product,
+          id: item.id, // ✅ CartItem id (primary key of CartItem)
+          productId: item.product, // Product ID stays here
           name: item.product_name,
           image: item.product_image.startsWith("http")
             ? item.product_image
@@ -60,20 +60,37 @@ const CartContex = () => {
     fetchCart();
   }, []);
 
-  // Update quantity of cart item
   const handleQuantityChange = async (value, index) => {
+    if (value < 1) return; // Prevent less than 1 quantity
+
     const updatedCart = [...cartItems];
     const item = updatedCart[index];
-
-    if (value > item.stock) {
-      message.warning(`Only ${item.stock} in stock.`);
-      return;
-    }
 
     try {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("User not authenticated");
 
+      // Fetch current stock for this product from backend
+      const stockRes = await fetch(
+        `${BACKEND_URL}/api/products/stocks/?ids=${item.productId}`,
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+
+      if (!stockRes.ok) throw new Error("Failed to fetch product stock");
+
+      const stockData = await stockRes.json();
+      const currentStock = stockData.length > 0 ? stockData[0].stock : 0;
+
+      if (value > currentStock) {
+        message.warning(`Only ${currentStock} items in stock.`);
+        return;
+      }
+
+      // Proceed with quantity update on backend
       const res = await fetch(`${BACKEND_URL}/api/cart/update/`, {
         method: "POST",
         headers: {
@@ -88,6 +105,7 @@ const CartContex = () => {
 
       if (!res.ok) throw new Error("Failed to update quantity");
 
+      // Update local state with new quantity and subtotal
       item.quantity = value;
       item.subtotal = value * item.price;
       setCartItems(updatedCart);
@@ -109,7 +127,7 @@ const CartContex = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8000/api/cart/remove/?item_id=${item.productId}`,
+        `http://localhost:8000/api/cart/remove/?item_id=${item.id}`, // ✅ cart item id here - correct
         {
           method: "DELETE",
           headers: {
@@ -133,7 +151,6 @@ const CartContex = () => {
     }
   };
 
-  // Proceed to checkout after stock verification
   const handleCheckout = async () => {
     if (cartItems.length === 0) {
       message.warning("🛒 Your cart is empty.");
@@ -144,7 +161,10 @@ const CartContex = () => {
       const token = localStorage.getItem("authToken");
       if (!token) throw new Error("User not authenticated");
 
+      // Prepare list of product IDs to check stock
       const ids = cartItems.map((item) => item.productId).join(",");
+
+      // Fetch current stock for those products from backend
       const res = await fetch(
         `${BACKEND_URL}/api/products/stocks/?ids=${ids}`,
         {
@@ -157,26 +177,29 @@ const CartContex = () => {
       if (!res.ok) throw new Error("Failed to check stock");
 
       const data = await res.json();
+
+      // Map productId to stock quantity
       const stockMap = {};
       data.forEach((product) => {
         stockMap[product.id] = product.stock;
       });
 
+      // Find items where quantity in cart > current stock
       const invalidItems = cartItems.filter(
-        (item) => item.quantity > (stockMap[item.productId] || 0)
+        (item) => item.quantity > (stockMap[item.productId] ?? 0)
       );
 
       if (invalidItems.length > 0) {
         invalidItems.forEach((item) => {
-          const available = stockMap[item.productId] || 0;
+          const available = stockMap[item.productId] ?? 0;
           message.error(
             `❌ ${item.name}: Requested ${item.quantity}, but only ${available} in stock.`
           );
         });
-        return;
+        return; // Stop proceeding if stock insufficient
       }
 
-      // Save checkout items and navigate to checkout page
+      // Stock is enough — proceed to save and navigate to checkout page
       localStorage.setItem("checkoutItems", JSON.stringify(cartItems));
       navigate("/checkout");
     } catch (error) {
@@ -273,8 +296,6 @@ const CartContex = () => {
         </div>
       </div>
       <Footer />
-
-      
     </div>
   );
 };
