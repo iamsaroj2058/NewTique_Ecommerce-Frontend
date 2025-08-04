@@ -57,9 +57,11 @@ const CheckOut = () => {
 
     try {
       const token = localStorage.getItem("authToken");
+      console.log("Auth token:", token);
+
       if (!token) {
         message.error("Authentication required");
-        setLoading(false); // Reset loading state
+        setLoading(false);
         return;
       }
 
@@ -67,7 +69,9 @@ const CheckOut = () => {
         const response = await axios.post(
           "http://localhost:8000/api/cash-on-delivery/",
           orderData,
-          { headers: { Authorization: `Token ${token}` } }
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
         );
 
         clearAllCartData();
@@ -81,7 +85,9 @@ const CheckOut = () => {
         const esewaResponse = await axios.post(
           "http://localhost:8000/api/esewa/initiate/",
           { amount: totalAmount },
-          { headers: { Authorization: `Token ${token}` } }
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
         );
 
         // Clear cart only AFTER successful initiation
