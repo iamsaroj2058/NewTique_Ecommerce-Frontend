@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../Section/Navbar/Header";
 import Topheader from "../../Section/Navbar/Topheader";
 import Footer from "../../Section/Footer/footer";
@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const CheckOut = () => {
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("esewa");
   const navigate = useNavigate();
@@ -93,24 +94,27 @@ const CheckOut = () => {
         // Clear cart only AFTER successful initiation
         clearAllCartData();
 
+        // const form = document.createElement("form");
+        // form.method = "POST";
+        // form.action = esewaResponse.data.esewa_url;
+
+        const esewaFields = {
+          amt: esewaResponse.data.amount,
+          psc: esewaResponse.data.product_service_charge,
+          pdc: esewaResponse.data.product_delivery_charge,
+          txAmt: esewaResponse.data.tax_amount,
+          tAmt: esewaResponse.data.total_amount,
+          pid: esewaResponse.data.transaction_uuid,
+          scd: esewaResponse.data.product_code,
+          su: esewaResponse.data.success_url,
+          fu: esewaResponse.data.failure_url,
+          signature: esewaResponse.data.signature,
+          signed_field_names: esewaResponse.data.signed_field_names,
+        };
+
         const form = document.createElement("form");
         form.method = "POST";
         form.action = esewaResponse.data.esewa_url;
-
-        const esewaFields = {
-          total_amount: esewaResponse.data.total_amount,
-          amount: esewaResponse.data.amount,
-          tax_amount: esewaResponse.data.tax_amount,
-          product_service_charge: esewaResponse.data.product_service_charge,
-          product_delivery_charge: esewaResponse.data.product_delivery_charge,
-          transaction_uuid: esewaResponse.data.transaction_uuid,
-          product_code: esewaResponse.data.product_code,
-          merchant_code: esewaResponse.data.product_code,
-          success_url: esewaResponse.data.success_url,
-          failure_url: esewaResponse.data.failure_url,
-          signed_field_names: esewaResponse.data.signed_field_names,
-          signature: esewaResponse.data.signature,
-        };
 
         for (const [key, value] of Object.entries(esewaFields)) {
           const input = document.createElement("input");
@@ -137,6 +141,31 @@ const CheckOut = () => {
     }
   };
 
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      const token = localStorage.getItem("authToken");
+      if (!token) return;
+
+      try {
+        const res = await axios.get("http://localhost:8000/api/user-profile/", {
+          headers: { Authorization: `Token ${token}` },
+        });
+
+        const { full_name, email, phone } = res.data;
+
+        form.setFieldsValue({
+          name: full_name,
+          email,
+          phone,
+        });
+      } catch (error) {
+        console.error("Failed to fetch user profile", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [form]);
+
   return (
     <div>
       <Topheader />
@@ -152,7 +181,7 @@ const CheckOut = () => {
         <div className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
           <h2 className="text-2xl font-semibold mb-6">Billing Information</h2>
 
-          <Form layout="vertical" onFinish={onFinish}>
+          <Form layout="vertical" onFinish={onFinish} form={form}>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Form.Item
                 label="Full Name"
