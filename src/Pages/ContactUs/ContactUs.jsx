@@ -57,7 +57,12 @@ const ContactUs = () => {
   }, []);
 
   const sanitizeContent = (html) => {
-    return { __html: DOMPurify.sanitize(html) };
+    const backendBaseURL = "http://localhost:8000/api/contact-us/";
+    const withFullSize = html.replace(
+      /<img /g,
+      '<img style="width:100%!important; height:500px!important; object-fit:cover!important;" '
+    );
+    return { __html: DOMPurify.sanitize(withFullSize) };
   };
 
   const handleInputChange = (e) => {
